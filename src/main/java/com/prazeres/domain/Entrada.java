@@ -4,6 +4,7 @@ import com.prazeres.enums.StatusEntrada;
 import com.prazeres.enums.StatusPagamento;
 import com.prazeres.enums.TipoPagamento;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -16,26 +17,36 @@ public class Entrada implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String placa;
+    private String placaVeiculo;
     @OneToOne
+    @JoinColumn(name = "quarto_id")
     private Quarto quarto;
-    private BigDecimal valorTotal;
-    private StatusPagamento statusPagamento;
+    @ManyToOne
+    @JoinColumn(name = "itens_id")
+    private Item itensConsumo;
+    private LocalTime horarioEntrada;
     private StatusEntrada statusEntrada;
+    private LocalDate dataRegistro;
     private TipoPagamento tipoPagamento;
-    private Long itensConsumo;
+    private StatusPagamento statusPagamento;
+    private BigDecimal valorTotal;
 
     public Entrada() {
     }
-    public Entrada(Long id, String placa, LocalTime registro, LocalDate data, BigDecimal valorTotal, StatusPagamento statusPagamento,
-                   StatusEntrada statusEntrada, TipoPagamento tipoPagamento, Long itensConsumo) {
+
+    public Entrada(Long id, String placaVeiculo, Quarto quarto, Item itensConsumo, LocalTime horarioEntrada,
+                   StatusEntrada statusEntrada, LocalDate dataRegistro, TipoPagamento tipoPagamento,
+                   StatusPagamento statusPagamento, BigDecimal valorTotal) {
         this.id = id;
-        this.placa = placa;
-        this.valorTotal = valorTotal;
-        this.statusPagamento = statusPagamento;
-        this.statusEntrada = statusEntrada;
-        this.tipoPagamento = tipoPagamento;
+        this.placaVeiculo = placaVeiculo;
+        this.quarto = quarto;
         this.itensConsumo = itensConsumo;
+        this.horarioEntrada = horarioEntrada;
+        this.statusEntrada = statusEntrada;
+        this.dataRegistro = dataRegistro;
+        this.tipoPagamento = tipoPagamento;
+        this.statusPagamento = statusPagamento;
+        this.valorTotal = valorTotal;
     }
 
     public Long getId() {
@@ -46,36 +57,36 @@ public class Entrada implements Serializable {
         this.id = id;
     }
 
-    public String getPlaca() {
-        return placa;
+    public String getPlacaVeiculo() {
+        return placaVeiculo;
     }
 
-    public void setPlaca(String placa) {
-        this.placa = placa;
+    public void setPlacaVeiculo(String placaVeiculo) {
+        this.placaVeiculo = placaVeiculo;
     }
 
-    public BigDecimal getValorTotal() {
-        return valorTotal;
+    public Quarto getQuarto() {
+        return quarto;
     }
 
-    public void setValorTotal(BigDecimal valorTotal) {
-        this.valorTotal = valorTotal;
+    public void setQuarto(Quarto quarto) {
+        this.quarto = quarto;
     }
 
-    public Long getItensConsumo() {
+    public Item getItensConsumo() {
         return itensConsumo;
     }
 
-    public void setItensConsumo(Long itensConsumo) {
+    public void setItensConsumo(Item itensConsumo) {
         this.itensConsumo = itensConsumo;
     }
 
-    public StatusPagamento getStatusPagamento() {
-        return statusPagamento;
+    public LocalTime getHorarioEntrada() {
+        return horarioEntrada;
     }
 
-    public void setStatusPagamento(StatusPagamento statusPagamento) {
-        this.statusPagamento = statusPagamento;
+    public void setHorarioEntrada(LocalTime horarioEntrada) {
+        this.horarioEntrada = horarioEntrada;
     }
 
     public StatusEntrada getStatusEntrada() {
@@ -86,6 +97,14 @@ public class Entrada implements Serializable {
         this.statusEntrada = statusEntrada;
     }
 
+    public LocalDate getDataRegistro() {
+        return dataRegistro;
+    }
+
+    public void setDataRegistro(LocalDate dataRegistro) {
+        this.dataRegistro = dataRegistro;
+    }
+
     public TipoPagamento getTipoPagamento() {
         return tipoPagamento;
     }
@@ -94,12 +113,19 @@ public class Entrada implements Serializable {
         this.tipoPagamento = tipoPagamento;
     }
 
-
-    public Quarto getQuarto() {
-        return quarto;
+    public StatusPagamento getStatusPagamento() {
+        return statusPagamento;
     }
 
-    public void setQuarto(Quarto quarto) {
-        this.quarto = quarto;
+    public void setStatusPagamento(StatusPagamento statusPagamento) {
+        this.statusPagamento = statusPagamento;
+    }
+
+    public BigDecimal getValorTotal() {
+        return valorTotal;
+    }
+
+    public void setValorTotal(BigDecimal valorTotal) {
+        this.valorTotal = valorTotal;
     }
 }
