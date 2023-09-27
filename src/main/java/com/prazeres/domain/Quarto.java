@@ -14,24 +14,19 @@ public class Quarto implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
     private Integer numero;
     private String descricao;
     private Integer capacidadePessoas;
-    private StatusQuarto statusQuarto;
 
     public Quarto() {
     }
-
 
     public Quarto(Long id, Integer numero, Integer capacidadePessoas, StatusQuarto statusQuarto, String descricao) {
         this.id = id;
         this.numero = numero;
         this.capacidadePessoas = capacidadePessoas;
-        this.statusQuarto = statusQuarto;
         this.descricao = descricao;
     }
-
 
     public Integer getNumero() {
         return numero;
@@ -47,14 +42,6 @@ public class Quarto implements Serializable {
 
     public void setCapacidadePessoas(Integer capacidadePessoas) {
         this.capacidadePessoas = capacidadePessoas;
-    }
-
-    public StatusQuarto getStatusQuarto() {
-        return statusQuarto;
-    }
-
-    public void setStatusQuarto(StatusQuarto statusQuarto) {
-        this.statusQuarto = statusQuarto;
     }
 
     public Long getId() {

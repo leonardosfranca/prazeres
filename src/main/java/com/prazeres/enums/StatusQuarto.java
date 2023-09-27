@@ -1,7 +1,7 @@
 package com.prazeres.enums;
 
 public enum StatusQuarto {
-    LIBERADO("lIBERADO"),
+    LIBERADO("LIBERADO"),
     OCUPADO( "OCUPADO");
 
 

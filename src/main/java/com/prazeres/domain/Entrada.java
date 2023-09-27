@@ -2,6 +2,7 @@ package com.prazeres.domain;
 
 import com.prazeres.enums.StatusEntrada;
 import com.prazeres.enums.StatusPagamento;
+import com.prazeres.enums.StatusQuarto;
 import com.prazeres.enums.TipoPagamento;
 import jakarta.persistence.*;
 
@@ -29,14 +30,15 @@ public class Entrada implements Serializable {
     private LocalDate dataRegistro;
     private TipoPagamento tipoPagamento;
     private StatusPagamento statusPagamento;
-    private BigDecimal valorParcial;
+    private BigDecimal valorTotal;
+    private StatusQuarto statusQuarto;
 
     public Entrada() {
     }
 
     public Entrada(Long id, String placaVeiculo, Quarto quarto, List<Item> itensConsumo, LocalTime horarioEntrada,
                    StatusEntrada statusEntrada, LocalDate dataRegistro, TipoPagamento tipoPagamento,
-                   StatusPagamento statusPagamento, BigDecimal valorParcial) {
+                   StatusPagamento statusPagamento, BigDecimal valorTotal, StatusQuarto statusQuarto) {
         this.id = id;
         this.placaVeiculo = placaVeiculo;
         this.quarto = quarto;
@@ -46,7 +48,8 @@ public class Entrada implements Serializable {
         this.dataRegistro = dataRegistro;
         this.tipoPagamento = tipoPagamento;
         this.statusPagamento = statusPagamento;
-        this.valorParcial = valorParcial;
+        this.valorTotal = valorTotal;
+        this.statusQuarto = statusQuarto;
     }
 
     public Long getId() {
@@ -121,11 +124,19 @@ public class Entrada implements Serializable {
         this.statusPagamento = statusPagamento;
     }
 
-    public BigDecimal getValorParcial() {
-        return valorParcial;
+    public BigDecimal getValorTotal() {
+        return valorTotal;
     }
 
-    public void setValorParcial(BigDecimal valorTotal) {
-        this.valorParcial = valorTotal;
+    public void setValorTotal(BigDecimal valorTotal) {
+        this.valorTotal = valorTotal;
+    }
+
+    public StatusQuarto getStatusQuarto() {
+        return statusQuarto;
+    }
+
+    public void setStatusQuarto(StatusQuarto statusQuarto) {
+        this.statusQuarto = statusQuarto;
     }
 }

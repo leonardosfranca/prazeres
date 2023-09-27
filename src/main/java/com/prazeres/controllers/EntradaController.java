@@ -31,13 +31,13 @@ public class EntradaController {
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Entrada adicionar(@Valid @RequestBody Entrada entrada) {
+    public Entrada adicionar(@RequestBody Entrada entrada) {
         return entradaService.salvar(entrada);
     }
 
     @PutMapping("/{entradaId}")
     public ResponseEntity<Entrada> atualizar(@PathVariable Long entradaId,
-                                             @Valid @RequestBody Entrada entrada) {
+                                             @RequestBody Entrada entrada) {
         return entradaService.atualizar(entradaId, entrada);
     }
     @DeleteMapping("/{entradaId}")
