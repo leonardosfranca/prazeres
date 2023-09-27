@@ -15,6 +15,7 @@ public class Item implements Serializable {
     private String descricao;
     private BigDecimal valor;
     @ManyToOne
+    @JoinColumn(name = "entrada_id")
     private Entrada entrada;
     public Item() {
     }

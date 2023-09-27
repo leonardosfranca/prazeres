@@ -16,12 +16,13 @@ public class Quarto implements Serializable {
     private Long id;
     @NotBlank
     private Integer numero;
+    private String descricao;
     private Integer capacidadePessoas;
     private StatusQuarto statusQuarto;
-    private String descricao;
 
     public Quarto() {
     }
+
 
     public Quarto(Long id, Integer numero, Integer capacidadePessoas, StatusQuarto statusQuarto, String descricao) {
         this.id = id;

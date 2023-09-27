@@ -23,6 +23,8 @@ public class EntradaController {
     public List<Entrada> listar() {
         return entradaService.listar();
     }
+
+
     @GetMapping("/{entradaId}")
     public ResponseEntity<Entrada> buscar(@PathVariable Long entradaId) {
         return entradaService.buscarPorId(entradaId);

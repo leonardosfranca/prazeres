@@ -4,12 +4,12 @@ import com.prazeres.enums.StatusEntrada;
 import com.prazeres.enums.StatusPagamento;
 import com.prazeres.enums.TipoPagamento;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 public class Entrada implements Serializable {
@@ -21,22 +21,22 @@ public class Entrada implements Serializable {
     @OneToOne
     @JoinColumn(name = "quarto_id")
     private Quarto quarto;
-    @ManyToOne
+    @OneToMany
     @JoinColumn(name = "itens_id")
-    private Item itensConsumo;
+    private List<Item> itensConsumo;
     private LocalTime horarioEntrada;
     private StatusEntrada statusEntrada;
     private LocalDate dataRegistro;
     private TipoPagamento tipoPagamento;
     private StatusPagamento statusPagamento;
-    private BigDecimal valorTotal;
+    private BigDecimal valorParcial;
 
     public Entrada() {
     }
 
-    public Entrada(Long id, String placaVeiculo, Quarto quarto, Item itensConsumo, LocalTime horarioEntrada,
+    public Entrada(Long id, String placaVeiculo, Quarto quarto, List<Item> itensConsumo, LocalTime horarioEntrada,
                    StatusEntrada statusEntrada, LocalDate dataRegistro, TipoPagamento tipoPagamento,
-                   StatusPagamento statusPagamento, BigDecimal valorTotal) {
+                   StatusPagamento statusPagamento, BigDecimal valorParcial) {
         this.id = id;
         this.placaVeiculo = placaVeiculo;
         this.quarto = quarto;
@@ -46,7 +46,7 @@ public class Entrada implements Serializable {
         this.dataRegistro = dataRegistro;
         this.tipoPagamento = tipoPagamento;
         this.statusPagamento = statusPagamento;
-        this.valorTotal = valorTotal;
+        this.valorParcial = valorParcial;
     }
 
     public Long getId() {
@@ -73,11 +73,11 @@ public class Entrada implements Serializable {
         this.quarto = quarto;
     }
 
-    public Item getItensConsumo() {
+    public List<Item> getItensConsumo() {
         return itensConsumo;
     }
 
-    public void setItensConsumo(Item itensConsumo) {
+    public void setItensConsumo(List<Item> itensConsumo) {
         this.itensConsumo = itensConsumo;
     }
 
@@ -121,11 +121,11 @@ public class Entrada implements Serializable {
         this.statusPagamento = statusPagamento;
     }
 
-    public BigDecimal getValorTotal() {
-        return valorTotal;
+    public BigDecimal getValorParcial() {
+        return valorParcial;
     }
 
-    public void setValorTotal(BigDecimal valorTotal) {
-        this.valorTotal = valorTotal;
+    public void setValorParcial(BigDecimal valorTotal) {
+        this.valorParcial = valorTotal;
     }
 }

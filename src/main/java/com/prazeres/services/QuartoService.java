@@ -2,9 +2,7 @@ package com.prazeres.services;
 
 import com.prazeres.domain.Quarto;
 import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
-import com.prazeres.domain.exception.NegocioException;
 import com.prazeres.repositories.QuartoRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +16,6 @@ public class QuartoService {
 
     public Quarto buscar(Long quartoId) {
         return quartoRepository.findById(quartoId)
-                .orElseThrow(()-> new EntidadeNaoEncontradaException("Quarto não encontrado!"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Quarto não encontrado!"));
     }
 }
