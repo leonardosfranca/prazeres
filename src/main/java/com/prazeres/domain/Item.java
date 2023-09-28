@@ -1,6 +1,9 @@
 package com.prazeres.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
@@ -13,14 +16,12 @@ public class Item implements Serializable {
     private Long id;
     @NotBlank
     private String descricao;
-    private BigDecimal valor;
-    @ManyToOne
-    @JoinColumn(name = "entrada_id")
-    private Entrada entrada;
+    private Double valor;
+
     public Item() {
     }
 
-    public Item(Long id, String descricao, BigDecimal valor) {
+    public Item(Long id, String descricao, Double valor) {
         this.id = id;
         this.descricao = descricao;
         this.valor = valor;
@@ -42,11 +43,11 @@ public class Item implements Serializable {
         this.descricao = descricao;
     }
 
-    public BigDecimal getValor() {
+    public Double getValor() {
         return valor;
     }
 
-    public void setValor(BigDecimal valor) {
+    public void setValor(Double valor) {
         this.valor = valor;
     }
 }

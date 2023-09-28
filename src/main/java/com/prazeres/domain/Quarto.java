@@ -17,6 +17,7 @@ public class Quarto implements Serializable {
     private Integer numero;
     private String descricao;
     private Integer capacidadePessoas;
+    private StatusQuarto statusQuarto;
 
     public Quarto() {
     }
@@ -26,6 +27,7 @@ public class Quarto implements Serializable {
         this.numero = numero;
         this.capacidadePessoas = capacidadePessoas;
         this.descricao = descricao;
+        this.statusQuarto = statusQuarto;
     }
 
     public Integer getNumero() {
@@ -58,5 +60,13 @@ public class Quarto implements Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public StatusQuarto getStatusQuarto() {
+        return statusQuarto;
+    }
+
+    public void setStatusQuarto(StatusQuarto statusQuarto) {
+        this.statusQuarto = statusQuarto;
     }
 }

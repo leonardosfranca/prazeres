@@ -5,6 +5,7 @@ import com.prazeres.enums.StatusPagamento;
 import com.prazeres.enums.StatusQuarto;
 import com.prazeres.enums.TipoPagamento;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -19,37 +20,36 @@ public class Entrada implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String placaVeiculo;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "quarto_id")
     private Quarto quarto;
     @OneToMany
-    @JoinColumn(name = "itens_id")
-    private List<Item> itensConsumo;
+    @JoinColumn(name = "consumo_id")
+    private List<Consumo> consumos;
     private LocalTime horarioEntrada;
     private StatusEntrada statusEntrada;
     private LocalDate dataRegistro;
     private TipoPagamento tipoPagamento;
     private StatusPagamento statusPagamento;
+    @Column(name = "valor_parcial")
     private BigDecimal valorTotal;
-    private StatusQuarto statusQuarto;
 
     public Entrada() {
     }
 
-    public Entrada(Long id, String placaVeiculo, Quarto quarto, List<Item> itensConsumo, LocalTime horarioEntrada,
+    public Entrada(Long id, String placaVeiculo, Quarto quarto, List<Consumo> consumos, LocalTime horarioEntrada,
                    StatusEntrada statusEntrada, LocalDate dataRegistro, TipoPagamento tipoPagamento,
-                   StatusPagamento statusPagamento, BigDecimal valorTotal, StatusQuarto statusQuarto) {
+                   StatusPagamento statusPagamento, BigDecimal valorTotal) {
         this.id = id;
         this.placaVeiculo = placaVeiculo;
         this.quarto = quarto;
-        this.itensConsumo = itensConsumo;
+        this.consumos = consumos;
         this.horarioEntrada = horarioEntrada;
         this.statusEntrada = statusEntrada;
         this.dataRegistro = dataRegistro;
         this.tipoPagamento = tipoPagamento;
         this.statusPagamento = statusPagamento;
         this.valorTotal = valorTotal;
-        this.statusQuarto = statusQuarto;
     }
 
     public Long getId() {
@@ -74,14 +74,6 @@ public class Entrada implements Serializable {
 
     public void setQuarto(Quarto quarto) {
         this.quarto = quarto;
-    }
-
-    public List<Item> getItensConsumo() {
-        return itensConsumo;
-    }
-
-    public void setItensConsumo(List<Item> itensConsumo) {
-        this.itensConsumo = itensConsumo;
     }
 
     public LocalTime getHorarioEntrada() {
@@ -132,11 +124,11 @@ public class Entrada implements Serializable {
         this.valorTotal = valorTotal;
     }
 
-    public StatusQuarto getStatusQuarto() {
-        return statusQuarto;
+    public List<Consumo> getConsumos() {
+        return consumos;
     }
 
-    public void setStatusQuarto(StatusQuarto statusQuarto) {
-        this.statusQuarto = statusQuarto;
+    public void setConsumos(List<Consumo> consumos) {
+        this.consumos = consumos;
     }
 }

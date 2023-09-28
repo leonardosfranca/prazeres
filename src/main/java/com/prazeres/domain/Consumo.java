@@ -12,15 +12,17 @@ public class Consumo implements Serializable {
     private Long id;
     private Integer quantidade;
     @ManyToOne
+    @JoinColumn(name = "item_id")
     private Item item;
     @OneToOne
+    @JoinColumn(name = "entrada_id")
     private Entrada entrada;
-    private BigDecimal subTotal;
+    private Double subTotal;
 
     public Consumo() {
     }
 
-    public Consumo(Long id, Integer quantidade, Item item, Entrada entrada, BigDecimal subTotal) {
+    public Consumo(Long id, Integer quantidade, Item item, Entrada entrada, Double subTotal) {
         this.id = id;
         this.quantidade = quantidade;
         this.item = item;
@@ -60,11 +62,11 @@ public class Consumo implements Serializable {
         this.entrada = entrada;
     }
 
-    public BigDecimal getSubTotal() {
+    public Double getSubTotal() {
         return subTotal;
     }
 
-    public void setSubTotal(BigDecimal subTotal) {
+    public void setSubTotal(Double subTotal) {
         this.subTotal = subTotal;
     }
 }
