@@ -2,6 +2,7 @@ package com.prazeres.controllers;
 
 import com.prazeres.domain.Entrada;
 import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
+import com.prazeres.domain.record.EntradaResponse;
 import com.prazeres.enums.StatusEntrada;
 import com.prazeres.services.EntradaService;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("/entradas")
@@ -41,7 +43,7 @@ public class EntradaController {
     }
 
     @GetMapping("/{entradaId}")
-    public Entrada buscar(@PathVariable Long entradaId) {
+    public AtomicReference<EntradaResponse> buscar(@PathVariable Long entradaId) {
         return entradaService.buscarPorId(entradaId);
     }
 
@@ -59,8 +61,9 @@ public class EntradaController {
     }
 
     @DeleteMapping("/{entradaId}")
-    public void deletar(@PathVariable Long entradaId) {
-        entradaService.excluir(entradaId);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Void> remover(@PathVariable Long entradaId) {
+        return entradaService.excluir(entradaId);
     }
 
     @ExceptionHandler(EntidadeNaoEncontradaException.class)

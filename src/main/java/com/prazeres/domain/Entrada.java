@@ -2,10 +2,8 @@ package com.prazeres.domain;
 
 import com.prazeres.enums.StatusEntrada;
 import com.prazeres.enums.StatusPagamento;
-import com.prazeres.enums.StatusQuarto;
 import com.prazeres.enums.TipoPagamento;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

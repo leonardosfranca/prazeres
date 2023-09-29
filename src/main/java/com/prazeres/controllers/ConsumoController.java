@@ -1,11 +1,12 @@
 package com.prazeres.controllers;
 
 import com.prazeres.domain.Consumo;
-import com.prazeres.domain.exception.NegocioException;
+import com.prazeres.domain.record.ConsumoResponse;
 import com.prazeres.services.ConsumoService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/consumo")
@@ -17,21 +18,32 @@ public class ConsumoController {
         this.consumoService = consumoService;
     }
 
-    @GetMapping("/{consumoId}")
+    @GetMapping
+    public List<Consumo> listar(Consumo consumo) {
+        return consumoService.listar(consumo);
+    }
+
+    @GetMapping("/findByEntradaId/{entradaId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Consumo> buscar(@PathVariable Long consumoId) {
-        return consumoService.buscarPorId(consumoId);
+    public List<ConsumoResponse> buscar(@PathVariable Long entradaId) {
+        return consumoService.findConsumoByEntrdaId(entradaId);
     }
 
     @DeleteMapping("/{consumoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> deletar(@PathVariable Long consumoId) {
-        return consumoService.excluir(consumoId);
+    public void deletar(@PathVariable Long consumoId) {
+        consumoService.excluir(consumoId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Consumo adicionar(Consumo consumo) {
         return consumoService.salvar(consumo);
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remover(Long consumoId) {
+        consumoService.excluir(consumoId);
     }
 }

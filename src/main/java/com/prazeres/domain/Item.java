@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 @Entity
 public class Item implements Serializable {

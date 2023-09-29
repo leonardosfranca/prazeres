@@ -3,7 +3,6 @@ package com.prazeres.domain;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 @Entity
 public class Consumo implements Serializable {
