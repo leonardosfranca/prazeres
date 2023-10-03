@@ -20,12 +20,28 @@ public class QuartoService {
         return quartoRepository.findAll();
     }
 
-    public Quarto buscar(Long quartoId) {
+    public Quarto buscaPorId(Long quartoId) {
         return quartoRepository.findById(quartoId)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Quarto não encontrado!"));
     }
+
     public Quarto salvar(Quarto quarto) {
         return quartoRepository.save(quarto);
+    }
+    public Quarto atualizar(Long quartoId, Quarto request) {
+        Quarto antigoQuarto =  quartoRepository.findById(quartoId)
+                .orElseThrow(()-> new EntidadeNaoEncontradaException("Quarto não encontrado"));
+        Quarto novoQuarto = new Quarto(
+                antigoQuarto.getId(),
+                request.getCapacidadePessoas(),
+                request.getStatusQuarto(),
+                request.getDescricao()
+        );
+        return quartoRepository.save(novoQuarto);
+    }
+
+    public void excluir(Long quartoId) {
+        quartoRepository.deleteById(quartoId);
     }
 
 }

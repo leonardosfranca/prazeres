@@ -6,7 +6,6 @@ import com.prazeres.enums.TipoPagamento;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -25,19 +24,22 @@ public class Entrada implements Serializable {
     @JoinColumn(name = "consumo_id")
     private List<Consumo> consumos;
     private LocalTime horarioEntrada;
+    @Enumerated(EnumType.STRING)
     private StatusEntrada statusEntrada;
     private LocalDate dataRegistro;
+    @Enumerated(EnumType.STRING)
     private TipoPagamento tipoPagamento;
+    @Enumerated(EnumType.STRING)
     private StatusPagamento statusPagamento;
     @Column(name = "valor_parcial")
-    private BigDecimal valorTotal;
+    private Double valorTotal;
 
     public Entrada() {
     }
 
     public Entrada(Long id, String placaVeiculo, Quarto quarto, List<Consumo> consumos, LocalTime horarioEntrada,
                    StatusEntrada statusEntrada, LocalDate dataRegistro, TipoPagamento tipoPagamento,
-                   StatusPagamento statusPagamento, BigDecimal valorTotal) {
+                   StatusPagamento statusPagamento, Double valorTotal) {
         this.id = id;
         this.placaVeiculo = placaVeiculo;
         this.quarto = quarto;
@@ -114,11 +116,11 @@ public class Entrada implements Serializable {
         this.statusPagamento = statusPagamento;
     }
 
-    public BigDecimal getValorTotal() {
+    public Double getValorTotal() {
         return valorTotal;
     }
 
-    public void setValorTotal(BigDecimal valorTotal) {
+    public void setValorTotal(Double valorTotal) {
         this.valorTotal = valorTotal;
     }
 

@@ -29,21 +29,18 @@ public class ConsumoController {
         return consumoService.findConsumoByEntrdaId(entradaId);
     }
 
-    @DeleteMapping("/{consumoId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletar(@PathVariable Long consumoId) {
-        consumoService.excluir(consumoId);
-    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Consumo adicionar(Consumo consumo) {
         return consumoService.salvar(consumo);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{consumoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void remover(Long consumoId) {
+    public void deletar(@PathVariable Long consumoId) {
         consumoService.excluir(consumoId);
     }
+
+
+
 }

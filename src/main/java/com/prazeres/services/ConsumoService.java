@@ -38,11 +38,11 @@ public class ConsumoService {
         consumo.forEach(consumo1 -> {
             ConsumoResponse consumoResponse = new ConsumoResponse(
                     new ConsumoResponse.Entrada(consumo1.getEntrada().getId(),
-                            consumo1.getEntrada().getQuarto().getNumero()),
-                    consumo1.getQuantidade(),
-                    consumo1.getItem().getDescricao(),
-                    consumo1.getSubTotal());
-            consumoResponseList.add(consumoResponse);
+                            consumo1.getEntrada().getQuarto().getCapacidadePessoas()),
+                            consumo1.getQuantidade(),
+                            consumo1.getItem().getDescricao(),
+                            consumo1.getSubTotal());
+                            consumoResponseList.add(consumoResponse);
         });
         return consumoResponseList;
     }

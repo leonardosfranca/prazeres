@@ -23,12 +23,23 @@ public class QuartoController {
 
     @GetMapping("/{buscaPorId}")
     public Quarto buscaPorId(@PathVariable Long buscaPorId) {
-        return quartoService.buscar(buscaPorId);
+        return quartoService.buscaPorId(buscaPorId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Quarto adicionar(@RequestBody Quarto quarto) {
+    public Quarto salvar(@RequestBody Quarto quarto) {
         return quartoService.salvar(quarto);
+    }
+
+    @PutMapping("/{quartoId}")
+    public Quarto atualizar(@PathVariable Long quartoId, @RequestBody Quarto quarto) {
+        return quartoService.atualizar(quartoId, quarto);
+    }
+
+    @DeleteMapping("/{quartoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluir(@PathVariable Long quartoId) {
+        quartoService.excluir(quartoId);
     }
 }

@@ -32,29 +32,28 @@ public class EntradaController {
     public List<Entrada> listarPorStatus(StatusEntrada statusEntrada) {
         return entradaService.listarPorStatus(statusEntrada);
     }
-    @GetMapping("/dataRegistro")
-    public List<Entrada> findAllByDataRegistro(LocalDate dataRegistro) {
-        return entradaService.listarPorDataRegistro(dataRegistro);
-    }
-
     @GetMapping("/dataAtual")
-    public List<Entrada> findAllByHoje() {
+    public List<Entrada> listarDataAtual() {
         return entradaService.listarDataAtual();
     }
 
+    @GetMapping("/dataRegistro")
+    public List<Entrada> listarPorDataRegistro(LocalDate dataRegistro) {
+        return entradaService.listarPorDataRegistro(dataRegistro);
+    }
+
     @GetMapping("/{entradaId}")
-    public AtomicReference<EntradaResponse> buscar(@PathVariable Long entradaId) {
+    public AtomicReference<EntradaResponse> buscarPorId(@PathVariable Long entradaId) {
         return entradaService.buscarPorId(entradaId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Entrada adicionar(Entrada entrada) {
+    public Entrada salvar(Entrada entrada) {
         return entradaService.salvar(entrada);
     }
 
     @PutMapping("/{entradaId}")
-    @ResponseStatus(HttpStatus.CREATED)
     public Entrada atualizar(@PathVariable("entradaId") Long entradaId,
                              Entrada entrada) {
         return entradaService.atualizar(entradaId, entrada);
@@ -62,8 +61,8 @@ public class EntradaController {
 
     @DeleteMapping("/{entradaId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> remover(@PathVariable Long entradaId) {
-        return entradaService.excluir(entradaId);
+    public void excluir(@PathVariable Long entradaId) {
+        entradaService.excluir(entradaId);
     }
 
     @ExceptionHandler(EntidadeNaoEncontradaException.class)

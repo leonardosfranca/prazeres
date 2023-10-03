@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EntradaRepository extends JpaRepository<Entrada, Long> {
-    Optional<Entrada> findByQuarto(Long id);
     List<Entrada> findAllByStatusEntrada(StatusEntrada statusEntrada);
     List<Entrada> findAllByDataRegistro(LocalDate dataRegistro);
     List<Entrada> findAllByHorarioEntradaAndDataRegistro(LocalTime horarioEntrada, LocalDate dataRegistro);

@@ -72,7 +72,7 @@ public class EntradaService {
         listaConsumo.forEach(a -> {
             entradaResponse.set(new EntradaResponse(
                     entrada.getPlacaVeiculo(),
-                    new EntradaResponse.Quarto(entrada.getQuarto().getNumero()),
+                    new EntradaResponse.Quarto(entrada.getQuarto().getCapacidadePessoas()),
                     consumoResumoResponseList,
                     entrada.getHorarioEntrada(),
                     entrada.getStatusEntrada(),
@@ -97,7 +97,7 @@ public class EntradaService {
         entrada.setStatusEntrada(StatusEntrada.EM_ANDAMENTO);
         entrada.setStatusPagamento(StatusPagamento.PENDENTE);
         quarto.setStatusQuarto(StatusQuarto.OCUPADO);
-        entrada.setTipoPagamento(TipoPagamento.PENDENTE);
+        entrada.setTipoPagamento(TipoPagamento.A_PAGAR);
         quartoRepository.save(quarto);
 
         return entradaRepository.save(entrada);
@@ -122,11 +122,7 @@ public class EntradaService {
 
     }
 
-    public ResponseEntity<Void> excluir(Long entradaId) {
-        if (!entradaRepository.existsById(entradaId)) {
-            return ResponseEntity.notFound().build();
-        }
+    public void excluir(Long entradaId) {
         entradaRepository.deleteById(entradaId);
-        return ResponseEntity.noContent().build();
     }
 }

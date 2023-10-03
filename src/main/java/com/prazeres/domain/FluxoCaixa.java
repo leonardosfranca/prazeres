@@ -15,15 +15,15 @@ public class FluxoCaixa implements Serializable {
     private String descricao;
     @ManyToOne
     private Quarto quarto;
-    private BigDecimal valorEntrada;
-    private BigDecimal valorSaida;
-    private BigDecimal valorTotal;
+    private Double valorEntrada;
+    private Double valorSaida;
+    private Double valorTotal;
 
     public FluxoCaixa() {
     }
 
     public FluxoCaixa(Long id, LocalDateTime registroVenda, String descricao,
-                      Quarto quarto, BigDecimal valorEntrada, BigDecimal valorSaida, BigDecimal valorTotal) {
+                      Quarto quarto, Double valorEntrada, Double valorSaida, Double valorTotal) {
         this.id = id;
         this.registroVenda = registroVenda;
         this.descricao = descricao;
@@ -35,10 +35,6 @@ public class FluxoCaixa implements Serializable {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public LocalDateTime getRegistroVenda() {
@@ -65,27 +61,27 @@ public class FluxoCaixa implements Serializable {
         this.quarto = quarto;
     }
 
-    public BigDecimal getValorEntrada() {
+    public Double getValorEntrada() {
         return valorEntrada;
     }
 
-    public void setValorEntrada(BigDecimal valorEntrada) {
+    public void setValorEntrada(Double valorEntrada) {
         this.valorEntrada = valorEntrada;
     }
 
-    public BigDecimal getValorSaida() {
+    public Double getValorSaida() {
         return valorSaida;
     }
 
-    public void setValorSaida(BigDecimal valorSaida) {
+    public void setValorSaida(Double valorSaida) {
         this.valorSaida = valorSaida;
     }
 
-    public BigDecimal getValorTotal() {
+    public Double getValorTotal() {
         return valorTotal;
     }
 
-    public void setValorTotal(BigDecimal valorTotal) {
+    public void setValorTotal(Double valorTotal) {
         this.valorTotal = valorTotal;
     }
 }
