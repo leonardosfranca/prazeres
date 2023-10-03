@@ -33,9 +33,10 @@ public class QuartoService {
                 .orElseThrow(()-> new EntidadeNaoEncontradaException("Quarto não encontrado"));
         Quarto novoQuarto = new Quarto(
                 antigoQuarto.getId(),
-                request.getCapacidadePessoas(),
+                antigoQuarto.getDescricao(),
+                antigoQuarto.getCapacidadePessoas(),
                 request.getStatusQuarto(),
-                request.getDescricao()
+                request.getTipoQuarto()
         );
         return quartoRepository.save(novoQuarto);
     }

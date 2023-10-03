@@ -33,11 +33,12 @@ public class ConsumoService {
     }
 
     public List<ConsumoResponse> findConsumoByEntrdaId(Long entradaId) {
-        var consumo = consumoRepository.findConsumoByEntrada_Id(entradaId);
+        var consumo = consumoRepository.findConsumoByEntradaId(entradaId);
         List<ConsumoResponse> consumoResponseList = new ArrayList<>();
         consumo.forEach(consumo1 -> {
             ConsumoResponse consumoResponse = new ConsumoResponse(
-                    new ConsumoResponse.Entrada(consumo1.getEntrada().getId(),
+                    new ConsumoResponse.Entrada(
+                            consumo1.getEntrada().getId(),
                             consumo1.getEntrada().getQuarto().getCapacidadePessoas()),
                             consumo1.getQuantidade(),
                             consumo1.getItem().getDescricao(),

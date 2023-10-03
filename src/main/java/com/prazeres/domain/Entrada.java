@@ -11,6 +11,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Entity
+@Table(name = "entrada")
 public class Entrada implements Serializable {
 
     @Id
@@ -31,15 +32,14 @@ public class Entrada implements Serializable {
     private TipoPagamento tipoPagamento;
     @Enumerated(EnumType.STRING)
     private StatusPagamento statusPagamento;
-    @Column(name = "valor_parcial")
-    private Double valorTotal;
+    private Double valorEntrada;
 
     public Entrada() {
     }
 
     public Entrada(Long id, String placaVeiculo, Quarto quarto, List<Consumo> consumos, LocalTime horarioEntrada,
                    StatusEntrada statusEntrada, LocalDate dataRegistro, TipoPagamento tipoPagamento,
-                   StatusPagamento statusPagamento, Double valorTotal) {
+                   StatusPagamento statusPagamento, Double valorEntrada) {
         this.id = id;
         this.placaVeiculo = placaVeiculo;
         this.quarto = quarto;
@@ -49,7 +49,7 @@ public class Entrada implements Serializable {
         this.dataRegistro = dataRegistro;
         this.tipoPagamento = tipoPagamento;
         this.statusPagamento = statusPagamento;
-        this.valorTotal = valorTotal;
+        this.valorEntrada = valorEntrada;
     }
 
     public Long getId() {
@@ -116,12 +116,12 @@ public class Entrada implements Serializable {
         this.statusPagamento = statusPagamento;
     }
 
-    public Double getValorTotal() {
-        return valorTotal;
+    public Double getValorEntrada() {
+        return valorEntrada;
     }
 
-    public void setValorTotal(Double valorTotal) {
-        this.valorTotal = valorTotal;
+    public void setValorEntrada(Double valorTotal) {
+        this.valorEntrada = valorTotal;
     }
 
     public List<Consumo> getConsumos() {

@@ -2,6 +2,7 @@ package com.prazeres.controllers;
 
 import com.prazeres.domain.Entrada;
 import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
+import com.prazeres.domain.record.EntradaListaResponse;
 import com.prazeres.domain.record.EntradaResponse;
 import com.prazeres.enums.StatusEntrada;
 import com.prazeres.services.EntradaService;
@@ -10,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -23,27 +23,32 @@ public class EntradaController {
         this.entradaService = entradaService;
     }
 
-    @GetMapping
-    public List<Entrada> listar() {
-        return entradaService.listar();
+    @GetMapping("/listar")
+    @ResponseStatus(HttpStatus.OK)
+    public List<EntradaListaResponse> listarPorEntradaId() {
+        return entradaService.findAll();
     }
 
     @GetMapping("/status")
+    @ResponseStatus(HttpStatus.OK)
     public List<Entrada> listarPorStatus(StatusEntrada statusEntrada) {
         return entradaService.listarPorStatus(statusEntrada);
     }
     @GetMapping("/dataAtual")
+    @ResponseStatus(HttpStatus.OK)
     public List<Entrada> listarDataAtual() {
         return entradaService.listarDataAtual();
     }
 
     @GetMapping("/dataRegistro")
+    @ResponseStatus(HttpStatus.OK)
     public List<Entrada> listarPorDataRegistro(LocalDate dataRegistro) {
         return entradaService.listarPorDataRegistro(dataRegistro);
     }
 
     @GetMapping("/{entradaId}")
-    public AtomicReference<EntradaResponse> buscarPorId(@PathVariable Long entradaId) {
+    @ResponseStatus(HttpStatus.OK)
+    public EntradaResponse buscarPorId(@PathVariable Long entradaId) {
         return entradaService.buscarPorId(entradaId);
     }
 

@@ -5,21 +5,18 @@ import com.prazeres.domain.Quarto;
 import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
 import com.prazeres.domain.exception.NegocioException;
 import com.prazeres.domain.record.ConsumoResumoResponse;
+import com.prazeres.domain.record.EntradaListaResponse;
 import com.prazeres.domain.record.EntradaResponse;
-import com.prazeres.enums.StatusEntrada;
-import com.prazeres.enums.StatusPagamento;
-import com.prazeres.enums.StatusQuarto;
-import com.prazeres.enums.TipoPagamento;
+import com.prazeres.enums.*;
+import com.prazeres.repositories.ConsumoRepository;
 import com.prazeres.repositories.EntradaRepository;
 import com.prazeres.repositories.QuartoRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class EntradaService {
@@ -27,16 +24,32 @@ public class EntradaService {
     private final EntradaRepository entradaRepository;
     private final QuartoRepository quartoRepository;
     private final ConsumoService consumoService;
+    private final ConsumoRepository consumoRepository;
 
-    public EntradaService(EntradaRepository entradaRepository, QuartoRepository quartoRepository, ConsumoService consumoService) {
+    public EntradaService(EntradaRepository entradaRepository, QuartoRepository quartoRepository, ConsumoService consumoService, ConsumoRepository consumoRepository) {
         this.entradaRepository = entradaRepository;
         this.quartoRepository = quartoRepository;
         this.consumoService = consumoService;
+        this.consumoRepository = consumoRepository;
     }
 
-    public List<Entrada> listar() {
-        return entradaRepository.findAll();
+    public List<EntradaListaResponse> findAll() {
+        var listaEntrada = entradaRepository.findAll();
+        List<EntradaListaResponse> entradaListaResponseList = new ArrayList<>();
+        listaEntrada.forEach(listaEntrada1 -> {
+            EntradaListaResponse entradaListaResponse = new EntradaListaResponse(
+                    listaEntrada1.getId(),
+                    listaEntrada1.getPlacaVeiculo(),
+                    new EntradaListaResponse.Quarto(listaEntrada1.getQuarto().getNumero()),
+                    listaEntrada1.getHorarioEntrada(),
+                    listaEntrada1.getStatusEntrada(),
+                    listaEntrada1.getDataRegistro(),
+                    listaEntrada1.getStatusPagamento());
+            entradaListaResponseList.add(entradaListaResponse);
+        });
+        return entradaListaResponseList;
     }
+
 
     public List<Entrada> listarPorStatus(StatusEntrada statusEntrada) {
         return entradaRepository.findAllByStatusEntrada(statusEntrada);
@@ -51,36 +64,38 @@ public class EntradaService {
         return entradaRepository.findAllByDataRegistro(dataRegistro);
     }
 
-    public AtomicReference<EntradaResponse> buscarPorId(Long entradaId) {
+    public EntradaResponse buscarPorId(Long entradaId) {
         var entrada = entradaRepository.findById(entradaId)
                 .orElseThrow(() -> new RuntimeException("Entrada não encontrada"));
         var listaConsumo = consumoService.findConsumoByEntrdaId(entradaId);
-        AtomicReference<EntradaResponse> entradaResponse = new AtomicReference<>();
+
         List<ConsumoResumoResponse> consumoResumoResponseList = new ArrayList<>();
-        listaConsumo.forEach(b -> {
-            ConsumoResumoResponse consumoResumoResponse = new ConsumoResumoResponse(
-                    b.quantidade(),
-                    b.descricao()
-            );
-            consumoResumoResponseList.add(consumoResumoResponse);
-            if (consumoResumoResponse == null) {
-                consumoResumoResponse = new ConsumoResumoResponse(
-                        0,
-                        "Sem consumo");
-            }
+
+        listaConsumo.forEach(consumno->{
+        ConsumoResumoResponse consumoResumoResponse = new ConsumoResumoResponse(
+                consumno.quantidade(),
+                 consumno.descricao(),
+                consumno.valor()
+        );
+        consumoResumoResponseList.add(consumoResumoResponse);
         });
-        listaConsumo.forEach(a -> {
-            entradaResponse.set(new EntradaResponse(
-                    entrada.getPlacaVeiculo(),
-                    new EntradaResponse.Quarto(entrada.getQuarto().getCapacidadePessoas()),
-                    consumoResumoResponseList,
-                    entrada.getHorarioEntrada(),
-                    entrada.getStatusEntrada(),
-                    entrada.getDataRegistro(),
-                    entrada.getTipoPagamento(),
-                    entrada.getStatusPagamento()
-            ));
-        });
+
+        var totalConsumo = consumoRepository.valorConsumo();
+        var valorTotal = totalConsumo + entrada.getValorEntrada();
+        EntradaResponse entradaResponse = new EntradaResponse(
+                entrada.getPlacaVeiculo(),
+                new EntradaResponse.Quarto(entrada.getQuarto().getCapacidadePessoas()),
+                consumoResumoResponseList,
+                entrada.getHorarioEntrada(),
+                entrada.getStatusEntrada(),
+                entrada.getDataRegistro(),
+                entrada.getTipoPagamento(),
+                entrada.getStatusPagamento(),
+                totalConsumo,
+                entrada.getValorEntrada(),
+                valorTotal
+
+        );
         return entradaResponse;
     }
 
@@ -91,16 +106,29 @@ public class EntradaService {
         if (quarto.getStatusQuarto().equals(StatusQuarto.OCUPADO)) {
             throw new NegocioException("Quarto ocupado");
         }
+        salvar(entrada, quarto);
+        tipoQuarto(entrada);
 
+        var entradaRepositorio = entradaRepository.save(entrada);
+        quartoRepository.save(quarto);
+
+        return entradaRepositorio;
+    }
+
+    private void tipoQuarto(Entrada entrada) {
+        switch (entrada.getQuarto().getTipoQuarto()) {
+            case SUITE_MASTER -> entrada.setValorEntrada(40D);
+            case SUITE_COMUM -> entrada.setValorEntrada(30D);
+            case SUITE_VIP -> entrada.setValorEntrada(35D);
+        }
+    }
+    private void salvar(Entrada entrada, Quarto quarto) {
         entrada.setHorarioEntrada(LocalTime.now());
         entrada.setDataRegistro(LocalDate.now());
         entrada.setStatusEntrada(StatusEntrada.EM_ANDAMENTO);
         entrada.setStatusPagamento(StatusPagamento.PENDENTE);
         quarto.setStatusQuarto(StatusQuarto.OCUPADO);
         entrada.setTipoPagamento(TipoPagamento.A_PAGAR);
-        quartoRepository.save(quarto);
-
-        return entradaRepository.save(entrada);
     }
 
     public Entrada atualizar(Long entradaId, Entrada request) {
@@ -116,7 +144,7 @@ public class EntradaService {
                 entrada.getDataRegistro(),
                 request.getTipoPagamento(),
                 request.getStatusPagamento(),
-                entrada.getValorTotal()
+                entrada.getValorEntrada()
         );
         return entradaRepository.save(novaEntrada);
 
@@ -126,3 +154,6 @@ public class EntradaService {
         entradaRepository.deleteById(entradaId);
     }
 }
+
+
+

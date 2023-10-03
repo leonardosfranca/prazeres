@@ -16,7 +16,10 @@ public record EntradaResponse(
         StatusEntrada statusEntrada,
         LocalDate dataRegistro,
         TipoPagamento tipoPagamento,
-        StatusPagamento statusPagamento
+        StatusPagamento statusPagamento,
+        Float valorConsumo,
+        Double valorEntrada,
+        Double valorTotal
 
         ) {
     public record Quarto(
