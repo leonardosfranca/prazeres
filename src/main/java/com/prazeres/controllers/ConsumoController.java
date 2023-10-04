@@ -1,9 +1,11 @@
 package com.prazeres.controllers;
 
 import com.prazeres.domain.Consumo;
+import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
 import com.prazeres.domain.record.ConsumoResponse;
 import com.prazeres.services.ConsumoService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,10 +39,12 @@ public class ConsumoController {
 
     @DeleteMapping("/{consumoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletar(@PathVariable Long consumoId) {
+    public void excluir(@PathVariable Long consumoId) {
         consumoService.excluir(consumoId);
     }
 
-
-
+    @ExceptionHandler(EntidadeNaoEncontradaException.class)
+    public ResponseEntity<String> capturar(EntidadeNaoEncontradaException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

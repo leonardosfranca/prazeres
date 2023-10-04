@@ -11,6 +11,7 @@ public record EntradaListaResponse(
         String placaVeiculo,
         Quarto quarto,
         LocalTime horarioEntrada,
+        LocalTime horarioSaida,
         StatusEntrada statusEntrada,
         LocalDate dataRegistro,
         StatusPagamento statusPagamento

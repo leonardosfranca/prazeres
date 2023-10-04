@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("/entradas")
@@ -23,13 +22,13 @@ public class EntradaController {
         this.entradaService = entradaService;
     }
 
-    @GetMapping("/listar")
+    @GetMapping("/listarPorEntrada")
     @ResponseStatus(HttpStatus.OK)
-    public List<EntradaListaResponse> listarPorEntradaId() {
+    public List<EntradaListaResponse> listarPorEntrada() {
         return entradaService.findAll();
     }
 
-    @GetMapping("/status")
+    @GetMapping("/statusEntrada")
     @ResponseStatus(HttpStatus.OK)
     public List<Entrada> listarPorStatus(StatusEntrada statusEntrada) {
         return entradaService.listarPorStatus(statusEntrada);
@@ -46,9 +45,9 @@ public class EntradaController {
         return entradaService.listarPorDataRegistro(dataRegistro);
     }
 
-    @GetMapping("/{entradaId}")
+    @GetMapping("/buscarTodosOsConsumos/{entradaId}")
     @ResponseStatus(HttpStatus.OK)
-    public EntradaResponse buscarPorId(@PathVariable Long entradaId) {
+    public EntradaResponse buscarTodosOsConsumosPorIdEntrada(@PathVariable Long entradaId) {
         return entradaService.buscarPorId(entradaId);
     }
 

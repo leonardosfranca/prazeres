@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class Entrada implements Serializable {
     @JoinColumn(name = "consumo_id")
     private List<Consumo> consumos;
     private LocalTime horarioEntrada;
+    private LocalTime horarioSaida;
     @Enumerated(EnumType.STRING)
     private StatusEntrada statusEntrada;
     private LocalDate dataRegistro;
@@ -38,13 +40,14 @@ public class Entrada implements Serializable {
     }
 
     public Entrada(Long id, String placaVeiculo, Quarto quarto, List<Consumo> consumos, LocalTime horarioEntrada,
-                   StatusEntrada statusEntrada, LocalDate dataRegistro, TipoPagamento tipoPagamento,
-                   StatusPagamento statusPagamento, Double valorEntrada) {
+                   LocalTime horarioSaida, StatusEntrada statusEntrada, LocalDate dataRegistro,
+                   TipoPagamento tipoPagamento, StatusPagamento statusPagamento, Double valorEntrada) {
         this.id = id;
         this.placaVeiculo = placaVeiculo;
         this.quarto = quarto;
         this.consumos = consumos;
         this.horarioEntrada = horarioEntrada;
+        this.horarioSaida = horarioSaida;
         this.statusEntrada = statusEntrada;
         this.dataRegistro = dataRegistro;
         this.tipoPagamento = tipoPagamento;
@@ -130,5 +133,13 @@ public class Entrada implements Serializable {
 
     public void setConsumos(List<Consumo> consumos) {
         this.consumos = consumos;
+    }
+
+    public LocalTime getHorarioSaida() {
+        return horarioSaida;
+    }
+
+    public void setHorarioSaida(LocalTime horarioSaida) {
+        this.horarioSaida = horarioSaida;
     }
 }

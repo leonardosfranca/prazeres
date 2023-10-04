@@ -3,6 +3,7 @@ package com.prazeres.controllers;
 import com.prazeres.domain.Quarto;
 import com.prazeres.services.QuartoService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +34,8 @@ public class QuartoController {
     }
 
     @PutMapping("/{quartoId}")
-    public Quarto atualizar(@PathVariable Long quartoId, @RequestBody Quarto quarto) {
+    public ResponseEntity<Quarto> atualizar(@PathVariable Long quartoId,
+                                            @RequestBody Quarto quarto) {
         return quartoService.atualizar(quartoId, quarto);
     }
 

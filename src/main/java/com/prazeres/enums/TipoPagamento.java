@@ -5,5 +5,6 @@ public enum TipoPagamento {
     CARTAO_CREDITO,
     CARTAO_DEBITO,
     PIX,
-    A_PAGAR
+    A_PAGAR,
+    PENDENTE
 }
