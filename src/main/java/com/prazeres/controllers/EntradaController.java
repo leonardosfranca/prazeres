@@ -58,7 +58,7 @@ public class EntradaController {
     }
 
     @PutMapping("/{entradaId}")
-    public Entrada atualizar(@PathVariable("entradaId") Long entradaId,
+    public Entrada atualizar(@PathVariable Long entradaId,
                              Entrada entrada) {
         return entradaService.atualizar(entradaId, entrada);
     }

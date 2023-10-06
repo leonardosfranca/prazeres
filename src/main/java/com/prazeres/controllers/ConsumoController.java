@@ -1,7 +1,7 @@
 package com.prazeres.controllers;
 
 import com.prazeres.domain.Consumo;
-import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
+import com.prazeres.domain.exception.NegocioException;
 import com.prazeres.domain.record.ConsumoResponse;
 import com.prazeres.services.ConsumoService;
 import org.springframework.http.HttpStatus;
@@ -21,8 +21,8 @@ public class ConsumoController {
     }
 
     @GetMapping
-    public List<Consumo> listar(Consumo consumo) {
-        return consumoService.listar(consumo);
+    public List<Consumo> listar() {
+        return consumoService.listar();
     }
 
     @GetMapping("/findByEntradaId/{entradaId}")
@@ -43,8 +43,8 @@ public class ConsumoController {
         consumoService.excluir(consumoId);
     }
 
-    @ExceptionHandler(EntidadeNaoEncontradaException.class)
-    public ResponseEntity<String> capturar(EntidadeNaoEncontradaException e) {
+    @ExceptionHandler(NegocioException.class)
+    public ResponseEntity<String> capturar(NegocioException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

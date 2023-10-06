@@ -42,4 +42,8 @@ public class Item implements Serializable {
     public void setValor(Double valor) {
         this.valor = valor;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

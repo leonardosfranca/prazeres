@@ -19,7 +19,7 @@ public class ConsumoService {
         this.consumoRepository = consumoRepository;
     }
 
-    public List<Consumo> listar(Consumo consumo) {
+    public List<Consumo> listar() {
         return consumoRepository.findAll();
     }
 
@@ -34,6 +34,9 @@ public class ConsumoService {
 
     public List<ConsumoResponse> findConsumoByEntrdaId(Long entradaId) {
         var consumo = consumoRepository.findConsumoByEntradaId(entradaId);
+        if (consumo.isEmpty()) {
+            throw new NegocioException("Consumo não encontrado");
+        }
         List<ConsumoResponse> consumoResponseList = new ArrayList<>();
         consumo.forEach(consumo1 -> {
             ConsumoResponse consumoResponse = new ConsumoResponse(
@@ -53,4 +56,5 @@ public class ConsumoService {
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Consumo não encontrado"));
         consumoRepository.deleteById(buscarConsumo.getId());
     }
+
 }

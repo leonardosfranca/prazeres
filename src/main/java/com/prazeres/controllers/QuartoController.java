@@ -1,6 +1,7 @@
 package com.prazeres.controllers;
 
 import com.prazeres.domain.Quarto;
+import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
 import com.prazeres.services.QuartoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,5 +44,10 @@ public class QuartoController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void excluir(@PathVariable Long quartoId) {
         quartoService.excluir(quartoId);
+    }
+
+    @ExceptionHandler(EntidadeNaoEncontradaException.class)
+    public ResponseEntity<String> capturar(EntidadeNaoEncontradaException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

@@ -15,11 +15,11 @@ import com.prazeres.enums.TipoPagamento;
 import com.prazeres.repositories.ConsumoRepository;
 import com.prazeres.repositories.EntradaRepository;
 import com.prazeres.repositories.QuartoRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,8 @@ public class EntradaService {
     private final ConsumoService consumoService;
     private final ConsumoRepository consumoRepository;
 
-    public EntradaService(EntradaRepository entradaRepository, QuartoRepository quartoRepository, ConsumoService consumoService, ConsumoRepository consumoRepository) {
+    public EntradaService(EntradaRepository entradaRepository, QuartoRepository quartoRepository,
+                          ConsumoService consumoService, ConsumoRepository consumoRepository) {
         this.entradaRepository = entradaRepository;
         this.quartoRepository = quartoRepository;
         this.consumoService = consumoService;
@@ -142,36 +143,32 @@ public class EntradaService {
         entrada.setTipoPagamento(TipoPagamento.A_PAGAR);
     }
 
-    public Entrada atualizar(Long entradaId, Entrada request) {
+    public Entrada atualizar(Long entradaId, Entrada entradaRequest) {
         Entrada entrada = entradaRepository.findById(entradaId)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Entrada não encontrada"));
-        Entrada novaEntrada = new Entrada(
-                entrada.getId(),
-                request.getPlacaVeiculo(),
-                entrada.getQuarto(),
-                entrada.getConsumos(),
-                entrada.getHorarioEntrada(),
-                entrada.getHorarioSaida(),
-                entrada.getStatusEntrada(),
-                entrada.getDataRegistro(),
-                request.getTipoPagamento(),
-                request.getStatusPagamento(),
-                entrada.getValorEntrada()
-        );
-        entradaRepository.save(novaEntrada);
-        entrada.setPlacaVeiculo(request.getPlacaVeiculo());
-        entrada.setTipoPagamento(request.getTipoPagamento());
-        entrada.setStatusPagamento(request.getStatusPagamento());
+        entrada.setPlacaVeiculo(entradaRequest.getPlacaVeiculo());
+        entrada.setStatusEntrada(entradaRequest.getStatusEntrada());
+        entrada.setTipoPagamento(entradaRequest.getTipoPagamento());
+        entrada.setStatusPagamento(entradaRequest.getStatusPagamento());
 
-        LocalTime horarioSaida = LocalTime.now();
-        Duration tempoPermanecido = Duration.between(entrada.getHorarioEntrada(), horarioSaida);
-        double custoAdicional = Math.ceil(tempoPermanecido.toMinutes() / 30.0) * 5.0;
+        if (entrada.getStatusEntrada().equals(StatusEntrada.FECHADA)) {
+            LocalTime horarioEntrada = entrada.getHorarioEntrada();
+            LocalTime horarioSaida = LocalTime.now();
 
-        List<Consumo> consumos = entrada.getConsumos();
-        double totalConsumos = consumos.stream().mapToDouble(Consumo::getSubTotal).sum();
-        double valorTotal = entrada.getValorEntrada() + custoAdicional + totalConsumos;
-        entrada.setValorEntrada(valorTotal);
-        entrada.setHorarioSaida(horarioSaida);
+            Duration tempoPermanecido = Duration.between(horarioEntrada, horarioSaida);
+            long minutosTotais = tempoPermanecido.toMinutes();
+            double custoAdicional = 0;
+
+            if (minutosTotais > 120) {
+                custoAdicional = Math.ceil(minutosTotais / 30.0) * 5.0;
+            }
+
+            List<Consumo> consumos = entrada.getConsumos();
+            double totalConsumos = consumos.stream().mapToDouble(Consumo::getSubTotal).sum();
+            double valorTotal = entrada.getValorEntrada() + custoAdicional + totalConsumos;
+            entrada.setValorEntrada(valorTotal);
+            entrada.setHorarioSaida(horarioSaida);
+        }
         entradaRepository.save(entrada);
         return entrada;
     }
@@ -179,8 +176,49 @@ public class EntradaService {
     public void excluir(Long entradaId) {
         Entrada entrada = entradaRepository.findById(entradaId)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Entrada não encontrado"));
-        consumoRepository.deleteById(entrada.getId());
+        if (!entradaRepository.existsById(entradaId)) {
+            ResponseEntity.notFound().build();
+        }
+        entradaRepository.deleteById(entradaId);
     }
+
+    /*        Entrada entrada = entradaRepository.findById(entradaId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Entrada não encontrada"));
+        Entrada novaEntrada = new Entrada(
+                entrada.getId(),
+                entradaRequest.getPlacaVeiculo(),
+                entrada.getQuarto(),
+                entrada.getConsumos(),
+                entrada.getHorarioEntrada(),
+                entrada.getHorarioSaida(),
+                entradaRequest.getStatusEntrada(),
+                entrada.getDataRegistro(),
+                entradaRequest.getTipoPagamento(),
+                entradaRequest.getStatusPagamento(),
+                entrada.getValorEntrada()
+        );
+        entradaRepository.save(novaEntrada);
+
+        if (entrada.getStatusEntrada().equals(StatusEntrada.FECHADA)) {
+            LocalTime horarioEntrada = entrada.getHorarioEntrada();
+            LocalTime horarioSaida = LocalTime.now();
+
+            Duration tempoPermanecido = Duration.between(horarioEntrada, horarioSaida);
+            long minutosTotais = tempoPermanecido.toMinutes();
+            double custoAdicional = 0;
+
+            if (minutosTotais > 120) {
+                custoAdicional = Math.ceil(minutosTotais / 30.0) * 5.0;
+            }
+
+            List<Consumo> consumos = entrada.getConsumos();
+            double totalConsumos = consumos.stream().mapToDouble(Consumo::getSubTotal).sum();
+            double valorTotal = entrada.getValorEntrada() + custoAdicional + totalConsumos;
+            entrada.setValorEntrada(valorTotal);
+            entrada.setHorarioSaida(horarioSaida);
+            entradaRepository.save(entrada);
+        }
+        return entrada;*/
 }
 
 

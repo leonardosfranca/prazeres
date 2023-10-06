@@ -1,6 +1,7 @@
 package com.prazeres.services;
 
 import com.prazeres.domain.Item;
+import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
 import com.prazeres.repositories.ItemRepository;
 import org.springframework.stereotype.Service;
 
@@ -21,5 +22,26 @@ public class ItemService {
 
     public Item adicionar(Item itemId) {
         return itemRepository.save(itemId);
+    }
+
+    public Item atualizar(Long itemId, Item itemRequest) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Item não encontrado"));
+        Item itemAtualizado = new Item(
+                item.getId(),
+                itemRequest.getDescricao(),
+                itemRequest.getValor()
+        );
+        itemRepository.save(itemAtualizado);
+        return item;
+    }
+
+    public void excluir(Long itemId) {
+        itemRepository.deleteById(itemId);
+    }
+
+    public Item buscarId(Long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Item não encontrado"));
     }
 }
