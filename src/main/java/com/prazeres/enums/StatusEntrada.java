@@ -3,5 +3,6 @@ package com.prazeres.enums;
 public enum StatusEntrada {
     EM_ANDAMENTO,
     FECHADA,
-    FINALIZADA
+    FINALIZADA,
+    AGUARDANDO_PAGAMENTO
 }

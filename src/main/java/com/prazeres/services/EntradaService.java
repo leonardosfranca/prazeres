@@ -58,7 +58,6 @@ public class EntradaService {
         return entradaListaResponseList;
     }
 
-
     public List<Entrada> listarPorStatus(StatusEntrada statusEntrada) {
         return entradaRepository.findAllByStatusEntrada(statusEntrada);
     }
@@ -74,7 +73,7 @@ public class EntradaService {
 
     public EntradaResponse buscarPorId(Long entradaId) {
         var entrada = entradaRepository.findById(entradaId)
-                .orElseThrow(() -> new RuntimeException("Entrada não encontrada"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Consumo não encontrada"));
         var listaConsumo = consumoService.findConsumoByEntrdaId(entradaId);
 
         List<ConsumoResumoResponse> consumoResumoResponseList = new ArrayList<>();
@@ -90,7 +89,7 @@ public class EntradaService {
 
         var totalConsumo = consumoRepository.valorConsumo();
         var valorTotal = totalConsumo + entrada.getValorEntrada();
-        EntradaResponse entradaResponse = new EntradaResponse(
+        return new EntradaResponse(
                 entrada.getPlacaVeiculo(),
                 new EntradaResponse.Quarto(entrada.getQuarto().getCapacidadePessoas()),
                 consumoResumoResponseList,
@@ -102,10 +101,7 @@ public class EntradaService {
                 totalConsumo,
                 entrada.getValorEntrada(),
                 valorTotal
-
-
         );
-        return entradaResponse;
     }
 
     public Entrada salvar(Entrada entrada) {
@@ -181,44 +177,6 @@ public class EntradaService {
         }
         entradaRepository.deleteById(entradaId);
     }
-
-    /*        Entrada entrada = entradaRepository.findById(entradaId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Entrada não encontrada"));
-        Entrada novaEntrada = new Entrada(
-                entrada.getId(),
-                entradaRequest.getPlacaVeiculo(),
-                entrada.getQuarto(),
-                entrada.getConsumos(),
-                entrada.getHorarioEntrada(),
-                entrada.getHorarioSaida(),
-                entradaRequest.getStatusEntrada(),
-                entrada.getDataRegistro(),
-                entradaRequest.getTipoPagamento(),
-                entradaRequest.getStatusPagamento(),
-                entrada.getValorEntrada()
-        );
-        entradaRepository.save(novaEntrada);
-
-        if (entrada.getStatusEntrada().equals(StatusEntrada.FECHADA)) {
-            LocalTime horarioEntrada = entrada.getHorarioEntrada();
-            LocalTime horarioSaida = LocalTime.now();
-
-            Duration tempoPermanecido = Duration.between(horarioEntrada, horarioSaida);
-            long minutosTotais = tempoPermanecido.toMinutes();
-            double custoAdicional = 0;
-
-            if (minutosTotais > 120) {
-                custoAdicional = Math.ceil(minutosTotais / 30.0) * 5.0;
-            }
-
-            List<Consumo> consumos = entrada.getConsumos();
-            double totalConsumos = consumos.stream().mapToDouble(Consumo::getSubTotal).sum();
-            double valorTotal = entrada.getValorEntrada() + custoAdicional + totalConsumos;
-            entrada.setValorEntrada(valorTotal);
-            entrada.setHorarioSaida(horarioSaida);
-            entradaRepository.save(entrada);
-        }
-        return entrada;*/
 }
 
 

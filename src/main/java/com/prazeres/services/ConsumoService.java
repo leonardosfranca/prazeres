@@ -5,7 +5,9 @@ import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
 import com.prazeres.domain.exception.NegocioException;
 import com.prazeres.domain.record.ConsumoResponse;
 import com.prazeres.repositories.ConsumoRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +36,11 @@ public class ConsumoService {
 
     public List<ConsumoResponse> findConsumoByEntrdaId(Long entradaId) {
         var consumo = consumoRepository.findConsumoByEntradaId(entradaId);
+
         if (consumo.isEmpty()) {
-            throw new NegocioException("Consumo não encontrado");
+            throw new NegocioException("Não houve consumo");
         }
+
         List<ConsumoResponse> consumoResponseList = new ArrayList<>();
         consumo.forEach(consumo1 -> {
             ConsumoResponse consumoResponse = new ConsumoResponse(

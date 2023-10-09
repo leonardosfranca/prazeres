@@ -21,7 +21,6 @@ public class Quarto implements Serializable {
     private TipoQuarto tipoQuarto;
 
     public Quarto() {
-
     }
     public Quarto(Long id, String descricao, Integer capacidadePessoas, StatusQuarto statusQuarto, TipoQuarto tipoQuarto) {
     }

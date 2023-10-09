@@ -2,9 +2,11 @@ package com.prazeres.controllers;
 
 import com.prazeres.domain.Entrada;
 import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
+import com.prazeres.domain.exception.NegocioException;
 import com.prazeres.domain.record.EntradaListaResponse;
 import com.prazeres.domain.record.EntradaResponse;
 import com.prazeres.enums.StatusEntrada;
+import com.prazeres.repositories.EntradaRepository;
 import com.prazeres.services.EntradaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +19,24 @@ import java.util.List;
 @RequestMapping("/entradas")
 public class EntradaController {
     private final EntradaService entradaService;
+    private final EntradaRepository entradaRepository;
 
-    public EntradaController(EntradaService entradaService) {
+    public EntradaController(EntradaService entradaService, EntradaRepository entradaRepository) {
         this.entradaService = entradaService;
+        this.entradaRepository = entradaRepository;
     }
 
     @GetMapping("/listarPorEntrada")
     @ResponseStatus(HttpStatus.OK)
     public List<EntradaListaResponse> listarPorEntrada() {
         return entradaService.findAll();
+    }
+
+    @GetMapping("/{buscarPorId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Entrada buscarPorId(@PathVariable Long buscarPorId) {
+        return entradaRepository.findById(buscarPorId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Id não encontrado"));
     }
 
     @GetMapping("/statusEntrada")
@@ -45,7 +56,7 @@ public class EntradaController {
         return entradaService.listarPorDataRegistro(dataRegistro);
     }
 
-    @GetMapping("/buscarTodosOsConsumos/{entradaId}")
+    @GetMapping("/buscarTodosOsConsumosPorIdEntrada/{entradaId}")
     @ResponseStatus(HttpStatus.OK)
     public EntradaResponse buscarTodosOsConsumosPorIdEntrada(@PathVariable Long entradaId) {
         return entradaService.buscarPorId(entradaId);
@@ -73,4 +84,10 @@ public class EntradaController {
     public ResponseEntity<String> capturar(EntidadeNaoEncontradaException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(NegocioException.class)
+    public ResponseEntity<String> capturar(NegocioException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
 }
