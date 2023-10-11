@@ -1,8 +1,7 @@
 package com.prazeres.controllers;
 
 import com.prazeres.domain.Entrada;
-import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
-import com.prazeres.domain.exception.NegocioException;
+import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.domain.record.EntradaListaResponse;
 import com.prazeres.domain.record.EntradaResponse;
 import com.prazeres.enums.StatusEntrada;
@@ -36,7 +35,7 @@ public class EntradaController {
     @ResponseStatus(HttpStatus.OK)
     public Entrada buscarPorId(@PathVariable Long buscarPorId) {
         return entradaRepository.findById(buscarPorId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Id não encontrado"));
+                .orElseThrow(() -> new NegocioException("Id não encontrado"));
     }
 
     @GetMapping("/statusEntrada")
@@ -47,7 +46,7 @@ public class EntradaController {
     @GetMapping("/dataAtual")
     @ResponseStatus(HttpStatus.OK)
     public List<Entrada> listarDataAtual() {
-        return entradaService.listarDataAtual();
+        return entradaService.listarPorDataAtual();
     }
 
     @GetMapping("/dataRegistro")
@@ -80,10 +79,6 @@ public class EntradaController {
         entradaService.excluir(entradaId);
     }
 
-    @ExceptionHandler(EntidadeNaoEncontradaException.class)
-    public ResponseEntity<String> capturar(EntidadeNaoEncontradaException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
 
     @ExceptionHandler(NegocioException.class)
     public ResponseEntity<String> capturar(NegocioException e) {

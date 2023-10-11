@@ -1,7 +1,7 @@
 package com.prazeres.controllers;
 
 import com.prazeres.domain.Item;
-import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
+import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.services.ItemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,8 +47,8 @@ public class ItemController {
         itemService.excluir(itemId);
     }
 
-    @ExceptionHandler(EntidadeNaoEncontradaException.class)
-    public ResponseEntity<String> capturar(EntidadeNaoEncontradaException e) {
+    @ExceptionHandler(NegocioException.class)
+    public ResponseEntity<String> capturar(NegocioException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

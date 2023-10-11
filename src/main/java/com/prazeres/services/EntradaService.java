@@ -3,8 +3,7 @@ package com.prazeres.services;
 import com.prazeres.domain.Consumo;
 import com.prazeres.domain.Entrada;
 import com.prazeres.domain.Quarto;
-import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
-import com.prazeres.domain.exception.NegocioException;
+import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.domain.record.ConsumoResumoResponse;
 import com.prazeres.domain.record.EntradaListaResponse;
 import com.prazeres.domain.record.EntradaResponse;
@@ -15,6 +14,7 @@ import com.prazeres.enums.TipoPagamento;
 import com.prazeres.repositories.ConsumoRepository;
 import com.prazeres.repositories.EntradaRepository;
 import com.prazeres.repositories.QuartoRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -62,18 +62,23 @@ public class EntradaService {
         return entradaRepository.findAllByStatusEntrada(statusEntrada);
     }
 
-    public List<Entrada> listarDataAtual() {
+    public List<Entrada> listarPorDataAtual() {
         LocalDate hoje = LocalDate.now();
         return entradaRepository.findAllByDataRegistro(hoje);
     }
 
     public List<Entrada> listarPorDataRegistro(LocalDate dataRegistro) {
-        return entradaRepository.findAllByDataRegistro(dataRegistro);
+        List<Entrada> entradas = entradaRepository.findAllByDataRegistro(dataRegistro);
+
+        if (entradas.isEmpty()) {
+            throw new NegocioException("Nenhum registro para essa data");
+        }
+        return entradas;
     }
 
     public EntradaResponse buscarPorId(Long entradaId) {
         var entrada = entradaRepository.findById(entradaId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Consumo não encontrada"));
+                .orElseThrow(() -> new NegocioException("Consumo não encontrada"));
         var listaConsumo = consumoService.findConsumoByEntrdaId(entradaId);
 
         List<ConsumoResumoResponse> consumoResumoResponseList = new ArrayList<>();
@@ -106,7 +111,7 @@ public class EntradaService {
 
     public Entrada salvar(Entrada entrada) {
         Quarto quarto = quartoRepository.findById(entrada.getQuarto().getId())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Quarto não encontrado"));
+                .orElseThrow(() -> new NegocioException("Quarto não encontrado"));
 
         if (quarto.getStatusQuarto().equals(StatusQuarto.OCUPADO)) {
             throw new NegocioException("Quarto ocupado");
@@ -125,7 +130,6 @@ public class EntradaService {
             case SUITE_MASTER -> entrada.setValorEntrada(70D);
             case SUITE_COMUM -> entrada.setValorEntrada(40D);
             case SUITE_VIP -> entrada.setValorEntrada(50D);
-            case SUITE_ECONOMICA -> entrada.setValorEntrada(30D);
             case SUITE_EXECUTIVA -> entrada.setValorEntrada(60D);
         }
     }
@@ -141,13 +145,20 @@ public class EntradaService {
 
     public Entrada atualizar(Long entradaId, Entrada entradaRequest) {
         Entrada entrada = entradaRepository.findById(entradaId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Entrada não encontrada"));
+                .orElseThrow(() -> new NegocioException("Entrada não encontrada"));
         entrada.setPlacaVeiculo(entradaRequest.getPlacaVeiculo());
         entrada.setStatusEntrada(entradaRequest.getStatusEntrada());
         entrada.setTipoPagamento(entradaRequest.getTipoPagamento());
         entrada.setStatusPagamento(entradaRequest.getStatusPagamento());
+        validacaoHorario(entrada);
+        entradaRepository.save(entrada);
+        return entrada;
+    }
 
-        if (entrada.getStatusEntrada().equals(StatusEntrada.FECHADA)) {
+    private void validacaoHorario(Entrada entrada) {
+
+        if (entrada.getStatusPagamento().equals(StatusPagamento.A_PAGAR)) {
+
             LocalTime horarioEntrada = entrada.getHorarioEntrada();
             LocalTime horarioSaida = LocalTime.now();
 
@@ -157,6 +168,7 @@ public class EntradaService {
 
             if (minutosTotais > 120) {
                 custoAdicional = Math.ceil(minutosTotais / 30.0) * 5.0;
+
             }
 
             List<Consumo> consumos = entrada.getConsumos();
@@ -165,16 +177,22 @@ public class EntradaService {
             entrada.setValorEntrada(valorTotal);
             entrada.setHorarioSaida(horarioSaida);
         }
-        entradaRepository.save(entrada);
-        return entrada;
     }
 
     public void excluir(Long entradaId) {
         Entrada entrada = entradaRepository.findById(entradaId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Entrada não encontrado"));
+                .orElseThrow(() -> new NegocioException("Entrada não encontrado"));
         if (!entradaRepository.existsById(entradaId)) {
             ResponseEntity.notFound().build();
         }
+        if (entrada.getQuarto().getStatusQuarto().equals(StatusQuarto.OCUPADO)) {
+
+            var quarto = quartoRepository.findById(entrada.getQuarto().getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Não encontrado"));
+            quarto.setStatusQuarto(StatusQuarto.LIBERADO);
+            quartoRepository.save(quarto);
+        }
+
         entradaRepository.deleteById(entradaId);
     }
 }

@@ -1,13 +1,10 @@
 package com.prazeres.services;
 
 import com.prazeres.domain.Consumo;
-import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
-import com.prazeres.domain.exception.NegocioException;
+import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.domain.record.ConsumoResponse;
 import com.prazeres.repositories.ConsumoRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +13,9 @@ import java.util.List;
 public class ConsumoService {
 
     private final ConsumoRepository consumoRepository;
-
     public ConsumoService(ConsumoRepository consumoRepository) {
         this.consumoRepository = consumoRepository;
     }
-
     public List<Consumo> listar() {
         return consumoRepository.findAll();
     }
@@ -57,7 +52,7 @@ public class ConsumoService {
 
     public void excluir(Long consumoId) {
         Consumo buscarConsumo = consumoRepository.findById(consumoId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Consumo não encontrado"));
+                .orElseThrow(() -> new NegocioException("Consumo não encontrado"));
         consumoRepository.deleteById(buscarConsumo.getId());
     }
 

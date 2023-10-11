@@ -1,7 +1,7 @@
 package com.prazeres.controllers;
 
 import com.prazeres.domain.Consumo;
-import com.prazeres.domain.exception.NegocioException;
+import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.domain.record.ConsumoResponse;
 import com.prazeres.services.ConsumoService;
 import org.springframework.http.HttpStatus;
@@ -15,11 +15,9 @@ import java.util.List;
 public class ConsumoController {
 
     private final ConsumoService consumoService;
-
     public ConsumoController(ConsumoService consumoService) {
         this.consumoService = consumoService;
     }
-
     @GetMapping
     public List<Consumo> listar() {
         return consumoService.listar();

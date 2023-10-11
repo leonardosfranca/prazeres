@@ -1,10 +1,10 @@
 package com.prazeres.controllers;
 
 import com.prazeres.domain.Quarto;
-import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
-import com.prazeres.domain.record.QuartoResponse;
+import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.enums.StatusQuarto;
 import com.prazeres.services.QuartoService;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +25,12 @@ public class QuartoController {
         return quartoService.listar();
     }
 
+    @GetMapping("/{quartoId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Quarto buscarPorId(@PathVariable Long quartoId) {
+        return quartoService.buscarPorId(quartoId);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Quarto salvar(@RequestBody Quarto quarto) {
@@ -32,8 +38,8 @@ public class QuartoController {
     }
 
     @PutMapping("/{quartoId}")
-    public ResponseEntity<Quarto> atualizar(@PathVariable Long quartoId,
-                                            @RequestBody Quarto quarto) {
+    public Quarto atualizar(@PathVariable Long quartoId,
+                            Quarto quarto) {
         return quartoService.atualizar(quartoId, quarto);
     }
 
@@ -49,8 +55,14 @@ public class QuartoController {
         return quartoService.listarPorStatus(statusQuarto);
     }
 
-    @ExceptionHandler(EntidadeNaoEncontradaException.class)
-    public ResponseEntity<String> capturar(EntidadeNaoEncontradaException e) {
+    @PostMapping("/{quartoId}")
+    public void liberarQuarto(@PathVariable Long quartoId) {
+         quartoService.fazerCheckOut(quartoId);
+    }
+
+    @ExceptionHandler(NegocioException.class)
+    public ResponseEntity<String> capturar(NegocioException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
 }

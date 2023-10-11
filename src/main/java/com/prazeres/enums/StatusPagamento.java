@@ -5,6 +5,7 @@ public enum StatusPagamento {
     PENDENTE,
     FALHA_NO_PAGAMENTO,
     CANCELADO,
-    PAGAMENTO_PARCIAL
+    PAGAMENTO_PARCIAL,
+    A_PAGAR
 
 }

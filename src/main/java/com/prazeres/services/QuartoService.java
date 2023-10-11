@@ -1,15 +1,12 @@
 package com.prazeres.services;
 
 import com.prazeres.domain.Quarto;
-import com.prazeres.domain.exception.EntidadeNaoEncontradaException;
-import com.prazeres.domain.record.ConsumoResumoResponse;
-import com.prazeres.domain.record.QuartoResponse;
+import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.enums.StatusQuarto;
 import com.prazeres.repositories.QuartoRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,33 +24,31 @@ public class QuartoService {
         return quartoRepository.findAll();
     }
 
+    public Quarto buscarPorId(Long quartoId) {
+        return quartoRepository.findById(quartoId)
+                .orElseThrow(() -> new NegocioException("Quarto não encontrado"));
+    }
 
     public Quarto salvar(Quarto quarto) {
         return quartoRepository.save(quarto);
     }
-//    public Quarto atualizar(Long quartoId, Quarto request) {
-//        Quarto antigoQuarto =  quartoRepository.findById(quartoId)
-//                .orElseThrow(()-> new EntidadeNaoEncontradaException("Quarto não encontrado"));
-//        Quarto novoQuarto = new Quarto(
-//                antigoQuarto.getId(),
-//                antigoQuarto.getDescricao(),
-//                antigoQuarto.getCapacidadePessoas(),
-//                request.getStatusQuarto(),
-//                request.getTipoQuarto()
-//        );
-//        return quartoRepository.save(novoQuarto);
-//    }
-
-    public ResponseEntity<Quarto> atualizar(Long quartoId, Quarto quarto) {
-        if (!quartoRepository.existsById(quartoId)) {
-            return ResponseEntity.notFound().build();
-        }
-        quarto.setId(quartoId);
-        Quarto quartoAtualizado = quartoRepository.save(quarto);
-        return ResponseEntity.ok(quartoAtualizado);
+    public Quarto atualizar(Long quartoId, Quarto requestQuarto) {
+        Quarto quarto = quartoRepository.findById(quartoId)
+                .orElseThrow(()-> new NegocioException("Quarto não encontrado"));
+        quarto.setStatusQuarto(requestQuarto.getStatusQuarto());
+        quarto.setTipoQuarto(requestQuarto.getTipoQuarto());
+        quarto.setNumero(requestQuarto.getNumero());
+        quarto.setDescricao(requestQuarto.getDescricao());
+        quarto.setCapacidadePessoas(requestQuarto.getCapacidadePessoas());
+        return quartoRepository.save(quarto);
     }
 
     public void excluir(Long quartoId) {
+        Quarto quarto = quartoRepository.findById(quartoId)
+                .orElseThrow(()-> new NegocioException("Quarto não encontrado"));
+        if (!quartoRepository.existsById(quartoId)) {
+            ResponseEntity.notFound().build();
+        }
         quartoRepository.deleteById(quartoId);
     }
 
@@ -61,5 +56,12 @@ public class QuartoService {
         return quartoRepository.findAllByStatusQuarto(statusQuarto);
     }
 
+    public void fazerCheckOut(Long quartoId) {
+        Quarto quarto = quartoRepository.findById(quartoId)
+                .orElseThrow(() -> new NegocioException("Quarto não encontrado"));
+
+        quarto.setStatusQuarto(StatusQuarto.LIBERADO);
+        quartoRepository.save(quarto);
+    }
 
 }

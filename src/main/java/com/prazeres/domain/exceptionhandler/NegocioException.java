@@ -1,4 +1,4 @@
-package com.prazeres.domain.exception;
+package com.prazeres.domain.exceptionhandler;
 
 public class NegocioException extends RuntimeException{
     public NegocioException(String message) {
