@@ -1,7 +1,7 @@
 package com.prazeres.services;
 
 import com.prazeres.domain.FluxoCaixa;
-import com.prazeres.domain.exceptionhandler.EntidadeException;
+import com.prazeres.domain.exceptionhandler.EntidadeNaoEncontradaException;
 import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.repositories.FluxoCaixaRepository;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class FluxoCaixaService {
     }
     public FluxoCaixa buscarPorId(Long fluxoCaixaId) {
         return fluxoCaixaRepository.findById(fluxoCaixaId)
-                .orElseThrow(()-> new EntidadeException("Não encontrado"));
+                .orElseThrow(()-> new EntidadeNaoEncontradaException("Fluxo não encontrado"));
     }
 
     public FluxoCaixa criar(FluxoCaixa fluxoCaixa) {
@@ -40,6 +40,9 @@ public class FluxoCaixaService {
     public void excluir(Long fluxoCaixaId) {
         FluxoCaixa fluxoCaixa = fluxoCaixaRepository.findById(fluxoCaixaId)
                 .orElseThrow(()-> new NegocioException("Fluxo não encontrado"));
-        fluxoCaixaRepository.deleteById(fluxoCaixa.getId());
+        if (!fluxoCaixaRepository.existsById(fluxoCaixaId)) {
+            ResponseEntity.notFound().build();
+        }
+        fluxoCaixaRepository.deleteById(fluxoCaixaId);
     }
 }

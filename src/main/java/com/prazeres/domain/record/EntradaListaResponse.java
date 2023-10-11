@@ -1,5 +1,6 @@
 package com.prazeres.domain.record;
 
+import com.prazeres.domain.Quarto;
 import com.prazeres.enums.StatusEntrada;
 import com.prazeres.enums.StatusPagamento;
 
@@ -17,8 +18,6 @@ public record EntradaListaResponse(
         StatusPagamento statusPagamento
 
 ) {
-    public record Quarto(
-            Integer numero
-    ) {
-    }
+
+
 }

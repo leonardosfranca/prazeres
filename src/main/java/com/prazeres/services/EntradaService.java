@@ -47,7 +47,7 @@ public class EntradaService {
             EntradaListaResponse entradaListaResponse = new EntradaListaResponse(
                     listaEntrada1.getId(),
                     listaEntrada1.getPlacaVeiculo(),
-                    new EntradaListaResponse.Quarto(listaEntrada1.getQuarto().getNumero()),
+                    listaEntrada1.getQuarto(),
                     listaEntrada1.getHorarioEntrada(),
                     listaEntrada1.getHorarioSaida(),
                     listaEntrada1.getStatusEntrada(),
@@ -121,7 +121,6 @@ public class EntradaService {
 
         var entradaRepositorio = entradaRepository.save(entrada);
         quartoRepository.save(quarto);
-
         return entradaRepositorio;
     }
 
@@ -168,7 +167,6 @@ public class EntradaService {
 
             if (minutosTotais > 120) {
                 custoAdicional = Math.ceil(minutosTotais / 30.0) * 5.0;
-
             }
 
             List<Consumo> consumos = entrada.getConsumos();

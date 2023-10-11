@@ -37,8 +37,6 @@ public class QuartoService {
                 .orElseThrow(()-> new NegocioException("Quarto não encontrado"));
         quarto.setStatusQuarto(requestQuarto.getStatusQuarto());
         quarto.setTipoQuarto(requestQuarto.getTipoQuarto());
-        quarto.setNumero(requestQuarto.getNumero());
-        quarto.setDescricao(requestQuarto.getDescricao());
         quarto.setCapacidadePessoas(requestQuarto.getCapacidadePessoas());
         return quartoRepository.save(quarto);
     }

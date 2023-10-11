@@ -12,8 +12,6 @@ public class Quarto implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer numero;
-    private String descricao;
     private Integer capacidadePessoas;
     @Enumerated(EnumType.STRING)
     private StatusQuarto statusQuarto;
@@ -28,8 +26,6 @@ public class Quarto implements Serializable {
     public Quarto(Long id, Integer numero, String descricao, Integer capacidadePessoas, StatusQuarto statusQuarto,
                   TipoQuarto tipoQuarto) {
         this.id = id;
-        this.numero = numero;
-        this.descricao = descricao;
         this.capacidadePessoas = capacidadePessoas;
         this.statusQuarto = statusQuarto;
         this.tipoQuarto = tipoQuarto;
@@ -41,22 +37,6 @@ public class Quarto implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Integer getNumero() {
-        return numero;
-    }
-
-    public void setNumero(Integer numero) {
-        this.numero = numero;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
     }
 
     public Integer getCapacidadePessoas() {

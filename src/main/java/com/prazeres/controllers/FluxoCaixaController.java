@@ -3,6 +3,7 @@ package com.prazeres.controllers;
 import com.prazeres.domain.FluxoCaixa;
 import com.prazeres.services.FluxoCaixaService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,12 +33,13 @@ public class FluxoCaixaController {
     }
 
     @PutMapping("/{fluxoCaixaId}")
-    public FluxoCaixa atualizar(Long fluxoCaixaId, FluxoCaixa fluxoCaixa) {
+    public FluxoCaixa atualizar(@PathVariable Long fluxoCaixaId, FluxoCaixa fluxoCaixa) {
         return fluxoCaixaService.atualizar(fluxoCaixaId, fluxoCaixa);
     }
 
     @DeleteMapping("/{fluxoCaixaId}")
-    public void remover(Long fluxoCaixaId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remover(@PathVariable Long fluxoCaixaId) {
         fluxoCaixaService.excluir(fluxoCaixaId);
     }
 }
