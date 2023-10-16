@@ -12,8 +12,7 @@ public class FluxoCaixa implements Serializable {
     private Long id;
     private LocalDateTime registroVenda;
     private String descricao;
-    @ManyToOne
-    private Quarto quarto;
+    private Integer quarto;
     private Double valorEntrada;
     private Double valorSaida;
     private Double valorTotal;
@@ -21,8 +20,8 @@ public class FluxoCaixa implements Serializable {
     public FluxoCaixa() {
     }
 
-    public FluxoCaixa(Long id, LocalDateTime registroVenda, String descricao,
-                      Quarto quarto, Double valorEntrada, Double valorSaida, Double valorTotal) {
+    public FluxoCaixa(Long id, LocalDateTime registroVenda, String descricao, Integer quarto, Double valorEntrada,
+                      Double valorSaida, Double valorTotal) {
         this.id = id;
         this.registroVenda = registroVenda;
         this.descricao = descricao;
@@ -52,14 +51,6 @@ public class FluxoCaixa implements Serializable {
         this.descricao = descricao;
     }
 
-    public Quarto getQuarto() {
-        return quarto;
-    }
-
-    public void setQuarto(Quarto quarto) {
-        this.quarto = quarto;
-    }
-
     public Double getValorEntrada() {
         return valorEntrada;
     }
@@ -82,5 +73,17 @@ public class FluxoCaixa implements Serializable {
 
     public void setValorTotal(Double valorTotal) {
         this.valorTotal = valorTotal;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getQuarto() {
+        return quarto;
+    }
+
+    public void setQuarto(Integer quarto) {
+        this.quarto = quarto;
     }
 }

@@ -2,6 +2,7 @@ package com.prazeres.services;
 
 import com.prazeres.domain.Consumo;
 import com.prazeres.domain.Entrada;
+import com.prazeres.domain.FluxoCaixa;
 import com.prazeres.domain.Quarto;
 import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.domain.record.ConsumoResumoResponse;
@@ -13,6 +14,7 @@ import com.prazeres.enums.StatusQuarto;
 import com.prazeres.enums.TipoPagamento;
 import com.prazeres.repositories.ConsumoRepository;
 import com.prazeres.repositories.EntradaRepository;
+import com.prazeres.repositories.FluxoCaixaRepository;
 import com.prazeres.repositories.QuartoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +34,15 @@ public class EntradaService {
     private final QuartoRepository quartoRepository;
     private final ConsumoService consumoService;
     private final ConsumoRepository consumoRepository;
+    private final FluxoCaixaRepository fluxoCaixaRepository;
 
     public EntradaService(EntradaRepository entradaRepository, QuartoRepository quartoRepository,
-                          ConsumoService consumoService, ConsumoRepository consumoRepository) {
+                          ConsumoService consumoService, ConsumoRepository consumoRepository, FluxoCaixaRepository fluxoCaixaRepository) {
         this.entradaRepository = entradaRepository;
         this.quartoRepository = quartoRepository;
         this.consumoService = consumoService;
         this.consumoRepository = consumoRepository;
+        this.fluxoCaixaRepository = fluxoCaixaRepository;
     }
 
     public List<EntradaListaResponse> findAll() {
@@ -109,14 +114,14 @@ public class EntradaService {
         );
     }
 
-    public Entrada salvar(Entrada entrada) {
+    public Entrada mudaStatusQuarto(Entrada entrada) {
         Quarto quarto = quartoRepository.findById(entrada.getQuarto().getId())
                 .orElseThrow(() -> new NegocioException("Quarto não encontrado"));
 
         if (quarto.getStatusQuarto().equals(StatusQuarto.OCUPADO)) {
             throw new NegocioException("Quarto ocupado");
         }
-        salvar(entrada, quarto);
+        mudaStatusQuarto(entrada, quarto);
         tipoQuarto(entrada);
 
         var entradaRepositorio = entradaRepository.save(entrada);
@@ -133,7 +138,7 @@ public class EntradaService {
         }
     }
 
-    private void salvar(Entrada entrada, Quarto quarto) {
+    private void mudaStatusQuarto(Entrada entrada, Quarto quarto) {
         entrada.setHorarioEntrada(LocalTime.now());
         entrada.setDataRegistro(LocalDate.now());
         entrada.setStatusEntrada(StatusEntrada.EM_ANDAMENTO);
@@ -150,9 +155,69 @@ public class EntradaService {
         entrada.setTipoPagamento(entradaRequest.getTipoPagamento());
         entrada.setStatusPagamento(entradaRequest.getStatusPagamento());
         validacaoHorario(entrada);
+
+        FluxoCaixa fluxoCaixa = new FluxoCaixa();
+        fluxoCaixa.setRegistroVenda(LocalDateTime.now());
+        fluxoCaixa.setDescricao(validacaoRelatorio());
+        fluxoCaixa.setQuarto(entrada.getQuarto().getNumero());
+        fluxoCaixa.setValorEntrada(entrada.getValorEntrada());
+        fluxoCaixa.setValorSaida(0D);
+
+        double valorTotal = fluxoCaixaRepository.valorCaixa() + entrada.getValorEntrada();
+        fluxoCaixa.setValorTotal(valorTotal);
+
+        fluxoCaixaRepository.save(fluxoCaixa);
         entradaRepository.save(entrada);
+
         return entrada;
     }
+
+    private String validacaoRelatorio() {
+        LocalTime noite = LocalTime.of(18, 0);
+        LocalTime dia = LocalTime.of(6, 0);
+
+        if (LocalTime.now().isBefore(noite) && LocalTime.now().isAfter(dia)) {
+            return "Entrada dia!";
+        } else {
+            return "Entrada noite!";
+        }
+    }
+
+
+//    public Entrada atualizar(Long entradaId, Entrada entradaRequest) {
+//        Entrada entrada = entradaRepository.findById(entradaId)
+//                .orElseThrow(() -> new NegocioException("Entrada não encontrada"));
+//        entrada.setPlacaVeiculo(entradaRequest.getPlacaVeiculo());
+//        entrada.setStatusEntrada(entradaRequest.getStatusEntrada());
+//        entrada.setTipoPagamento(entradaRequest.getTipoPagamento());
+//        entrada.setStatusPagamento(entradaRequest.getStatusPagamento());
+//        validacaoHorario(entrada);
+//
+//
+//        FluxoCaixa fluxoCaixa = new FluxoCaixa();
+//        fluxoCaixa.setRegistroVenda(LocalDateTime.now());
+//        var relatorio = validacaoRelatorio(fluxoCaixa.getDescricao());
+//        var valorTotal = fluxoCaixaRepository.valorCaixa() + entrada.getValorEntrada();
+//        fluxoCaixa.setDescricao(relatorio);
+//        fluxoCaixa.setQuarto(entrada.getQuarto().getNumero());
+//        fluxoCaixa.setValorEntrada(entrada.getValorEntrada());
+//        fluxoCaixa.setValorSaida(0D);
+//        fluxoCaixa.setValorTotal(valorTotal);
+//        fluxoCaixaRepository.save(fluxoCaixa);
+//        entradaRepository.save(entrada);
+//        return entrada;
+//    }
+//    private String validacaoRelatorio(String relatorio) {
+//        LocalTime noite = LocalTime.of(18,0);
+//        LocalTime dia = LocalTime.of(6,0);
+//
+//        if (LocalTime.now().isBefore(noite) && LocalTime.now().isAfter(dia)) {
+//            relatorio = "Entrada dia!";
+//        } else {
+//            relatorio = "Entrada noite!";
+//        }
+//        return relatorio;
+//    }
 
     private void validacaoHorario(Entrada entrada) {
 

@@ -4,6 +4,7 @@ import com.prazeres.domain.record.EntradaListaResponse;
 import com.prazeres.enums.StatusQuarto;
 import com.prazeres.enums.TipoQuarto;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.io.Serializable;
 
@@ -12,6 +13,7 @@ public class Quarto implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Integer numero;
     private Integer capacidadePessoas;
     @Enumerated(EnumType.STRING)
     private StatusQuarto statusQuarto;
@@ -26,6 +28,7 @@ public class Quarto implements Serializable {
     public Quarto(Long id, Integer numero, String descricao, Integer capacidadePessoas, StatusQuarto statusQuarto,
                   TipoQuarto tipoQuarto) {
         this.id = id;
+        this.numero = numero;
         this.capacidadePessoas = capacidadePessoas;
         this.statusQuarto = statusQuarto;
         this.tipoQuarto = tipoQuarto;
@@ -61,5 +64,13 @@ public class Quarto implements Serializable {
 
     public void setTipoQuarto(TipoQuarto tipoQuarto) {
         this.tipoQuarto = tipoQuarto;
+    }
+
+    public Integer getNumero() {
+        return numero;
+    }
+
+    public void setNumero(Integer numero) {
+        this.numero = numero;
     }
 }
