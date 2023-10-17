@@ -114,14 +114,14 @@ public class EntradaService {
         );
     }
 
-    public Entrada mudaStatusQuarto(Entrada entrada) {
+    public Entrada salvaEntrada(Entrada entrada) {
         Quarto quarto = quartoRepository.findById(entrada.getQuarto().getId())
                 .orElseThrow(() -> new NegocioException("Quarto não encontrado"));
 
         if (quarto.getStatusQuarto().equals(StatusQuarto.OCUPADO)) {
             throw new NegocioException("Quarto ocupado");
         }
-        mudaStatusQuarto(entrada, quarto);
+        salvaEntrada(entrada, quarto);
         tipoQuarto(entrada);
 
         var entradaRepositorio = entradaRepository.save(entrada);
@@ -138,7 +138,7 @@ public class EntradaService {
         }
     }
 
-    private void mudaStatusQuarto(Entrada entrada, Quarto quarto) {
+    private void salvaEntrada(Entrada entrada, Quarto quarto) {
         entrada.setHorarioEntrada(LocalTime.now());
         entrada.setDataRegistro(LocalDate.now());
         entrada.setStatusEntrada(StatusEntrada.EM_ANDAMENTO);
@@ -146,6 +146,43 @@ public class EntradaService {
         quarto.setStatusQuarto(StatusQuarto.OCUPADO);
         entrada.setTipoPagamento(TipoPagamento.A_PAGAR);
     }
+//
+//    public Entrada atualizar(Long entradaId, Entrada entradaRequest) {
+//        Entrada entrada = entradaRepository.findById(entradaId)
+//                .orElseThrow(() -> new NegocioException("Entrada não encontrada"));
+//        entrada.setPlacaVeiculo(entradaRequest.getPlacaVeiculo());
+//        entrada.setStatusEntrada(entradaRequest.getStatusEntrada());
+//        entrada.setTipoPagamento(entradaRequest.getTipoPagamento());
+//        entrada.setStatusPagamento(entradaRequest.getStatusPagamento());
+//        validacaoHorario(entrada);
+//
+//        FluxoCaixa fluxoCaixa = new FluxoCaixa();
+//        fluxoCaixa.setRegistroVenda(LocalDateTime.now());
+//        fluxoCaixa.setDescricao(validacaoRelatorio());
+//        fluxoCaixa.setQuarto(entrada.getQuarto().getNumero());
+//        fluxoCaixa.setValorEntrada(entrada.getValorEntrada());
+//        fluxoCaixa.setValorSaida(0D);
+//
+//        double valorTotal = fluxoCaixaRepository.valorCaixa() + entrada.getValorEntrada();
+//        fluxoCaixa.setValorTotal(valorTotal);
+//
+//        fluxoCaixaRepository.save(fluxoCaixa);
+//        entradaRepository.save(entrada);
+//
+//        return entrada;
+//    }
+//
+//    private String validacaoRelatorio() {
+//        LocalTime noite = LocalTime.of(18, 0);
+//        LocalTime dia = LocalTime.of(6, 0);
+//
+//        if (LocalTime.now().isBefore(noite) && LocalTime.now().isAfter(dia)) {
+//            return "Entrada dia!";
+//        } else {
+//            return "Entrada noite!";
+//        }
+//    }
+
 
     public Entrada atualizar(Long entradaId, Entrada entradaRequest) {
         Entrada entrada = entradaRepository.findById(entradaId)
@@ -156,14 +193,16 @@ public class EntradaService {
         entrada.setStatusPagamento(entradaRequest.getStatusPagamento());
         validacaoHorario(entrada);
 
+
         FluxoCaixa fluxoCaixa = new FluxoCaixa();
         fluxoCaixa.setRegistroVenda(LocalDateTime.now());
-        fluxoCaixa.setDescricao(validacaoRelatorio());
+        var relatorio = validacaoRelatorio(fluxoCaixa.getDescricao());
+
+        var valorTotal = fluxoCaixaRepository.valorCaixa() + entrada.getValorEntrada();
+        fluxoCaixa.setDescricao(relatorio);
         fluxoCaixa.setQuarto(entrada.getQuarto().getNumero());
         fluxoCaixa.setValorEntrada(entrada.getValorEntrada());
         fluxoCaixa.setValorSaida(0D);
-
-        double valorTotal = fluxoCaixaRepository.valorCaixa() + entrada.getValorEntrada();
         fluxoCaixa.setValorTotal(valorTotal);
 
         fluxoCaixaRepository.save(fluxoCaixa);
@@ -171,53 +210,17 @@ public class EntradaService {
 
         return entrada;
     }
-
-    private String validacaoRelatorio() {
-        LocalTime noite = LocalTime.of(18, 0);
-        LocalTime dia = LocalTime.of(6, 0);
+    private String validacaoRelatorio(String relatorio) {
+        LocalTime noite = LocalTime.of(18,0);
+        LocalTime dia = LocalTime.of(6,0);
 
         if (LocalTime.now().isBefore(noite) && LocalTime.now().isAfter(dia)) {
-            return "Entrada dia!";
+            relatorio = "Entrada dia!";
         } else {
-            return "Entrada noite!";
+            relatorio = "Entrada noite!";
         }
+        return relatorio;
     }
-
-
-//    public Entrada atualizar(Long entradaId, Entrada entradaRequest) {
-//        Entrada entrada = entradaRepository.findById(entradaId)
-//                .orElseThrow(() -> new NegocioException("Entrada não encontrada"));
-//        entrada.setPlacaVeiculo(entradaRequest.getPlacaVeiculo());
-//        entrada.setStatusEntrada(entradaRequest.getStatusEntrada());
-//        entrada.setTipoPagamento(entradaRequest.getTipoPagamento());
-//        entrada.setStatusPagamento(entradaRequest.getStatusPagamento());
-//        validacaoHorario(entrada);
-//
-//
-//        FluxoCaixa fluxoCaixa = new FluxoCaixa();
-//        fluxoCaixa.setRegistroVenda(LocalDateTime.now());
-//        var relatorio = validacaoRelatorio(fluxoCaixa.getDescricao());
-//        var valorTotal = fluxoCaixaRepository.valorCaixa() + entrada.getValorEntrada();
-//        fluxoCaixa.setDescricao(relatorio);
-//        fluxoCaixa.setQuarto(entrada.getQuarto().getNumero());
-//        fluxoCaixa.setValorEntrada(entrada.getValorEntrada());
-//        fluxoCaixa.setValorSaida(0D);
-//        fluxoCaixa.setValorTotal(valorTotal);
-//        fluxoCaixaRepository.save(fluxoCaixa);
-//        entradaRepository.save(entrada);
-//        return entrada;
-//    }
-//    private String validacaoRelatorio(String relatorio) {
-//        LocalTime noite = LocalTime.of(18,0);
-//        LocalTime dia = LocalTime.of(6,0);
-//
-//        if (LocalTime.now().isBefore(noite) && LocalTime.now().isAfter(dia)) {
-//            relatorio = "Entrada dia!";
-//        } else {
-//            relatorio = "Entrada noite!";
-//        }
-//        return relatorio;
-//    }
 
     private void validacaoHorario(Entrada entrada) {
 

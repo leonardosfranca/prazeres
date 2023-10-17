@@ -64,7 +64,7 @@ public class EntradaController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Entrada salvar(Entrada entrada) {
-        return entradaService.mudaStatusQuarto(entrada);
+        return entradaService.salvaEntrada(entrada);
     }
 
     @PutMapping("/{entradaId}")
