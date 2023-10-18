@@ -42,4 +42,10 @@ public class FluxoCaixaController {
     public void remover(@PathVariable Long fluxoCaixaId) {
         fluxoCaixaService.excluir(fluxoCaixaId);
     }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    private void deleteAll(FluxoCaixa fluxoCaixa) {
+        fluxoCaixaService.deletAll(fluxoCaixa);
+    }
 }

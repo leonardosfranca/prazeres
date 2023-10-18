@@ -146,73 +146,42 @@ public class EntradaService {
         quarto.setStatusQuarto(StatusQuarto.OCUPADO);
         entrada.setTipoPagamento(TipoPagamento.A_PAGAR);
     }
-//
-//    public Entrada atualizar(Long entradaId, Entrada entradaRequest) {
-//        Entrada entrada = entradaRepository.findById(entradaId)
-//                .orElseThrow(() -> new NegocioException("Entrada não encontrada"));
-//        entrada.setPlacaVeiculo(entradaRequest.getPlacaVeiculo());
-//        entrada.setStatusEntrada(entradaRequest.getStatusEntrada());
-//        entrada.setTipoPagamento(entradaRequest.getTipoPagamento());
-//        entrada.setStatusPagamento(entradaRequest.getStatusPagamento());
-//        validacaoHorario(entrada);
-//
-//        FluxoCaixa fluxoCaixa = new FluxoCaixa();
-//        fluxoCaixa.setRegistroVenda(LocalDateTime.now());
-//        fluxoCaixa.setDescricao(validacaoRelatorio());
-//        fluxoCaixa.setQuarto(entrada.getQuarto().getNumero());
-//        fluxoCaixa.setValorEntrada(entrada.getValorEntrada());
-//        fluxoCaixa.setValorSaida(0D);
-//
-//        double valorTotal = fluxoCaixaRepository.valorCaixa() + entrada.getValorEntrada();
-//        fluxoCaixa.setValorTotal(valorTotal);
-//
-//        fluxoCaixaRepository.save(fluxoCaixa);
-//        entradaRepository.save(entrada);
-//
-//        return entrada;
-//    }
-//
-//    private String validacaoRelatorio() {
-//        LocalTime noite = LocalTime.of(18, 0);
-//        LocalTime dia = LocalTime.of(6, 0);
-//
-//        if (LocalTime.now().isBefore(noite) && LocalTime.now().isAfter(dia)) {
-//            return "Entrada dia!";
-//        } else {
-//            return "Entrada noite!";
-//        }
-//    }
-
 
     public Entrada atualizar(Long entradaId, Entrada entradaRequest) {
         Entrada entrada = entradaRepository.findById(entradaId)
                 .orElseThrow(() -> new NegocioException("Entrada não encontrada"));
+
         entrada.setPlacaVeiculo(entradaRequest.getPlacaVeiculo());
         entrada.setStatusEntrada(entradaRequest.getStatusEntrada());
         entrada.setTipoPagamento(entradaRequest.getTipoPagamento());
         entrada.setStatusPagamento(entradaRequest.getStatusPagamento());
-        validacaoHorario(entrada);
 
 
-        FluxoCaixa fluxoCaixa = new FluxoCaixa();
-        fluxoCaixa.setRegistroVenda(LocalDateTime.now());
-        var relatorio = validacaoRelatorio(fluxoCaixa.getDescricao());
+        if (!entradaRequest.getTipoPagamento().equals(TipoPagamento.PENDENTE)) {
+            validacaoHorario(entrada);
 
-        var valorTotal = fluxoCaixaRepository.valorCaixa() + entrada.getValorEntrada();
-        fluxoCaixa.setDescricao(relatorio);
-        fluxoCaixa.setQuarto(entrada.getQuarto().getNumero());
-        fluxoCaixa.setValorEntrada(entrada.getValorEntrada());
-        fluxoCaixa.setValorSaida(0D);
-        fluxoCaixa.setValorTotal(valorTotal);
 
-        fluxoCaixaRepository.save(fluxoCaixa);
-        entradaRepository.save(entrada);
+            FluxoCaixa fluxoCaixa = new FluxoCaixa();
+            fluxoCaixa.setRegistroVenda(LocalDateTime.now());
+            var relatorio = validacaoRelatorio(fluxoCaixa.getDescricao());
 
+            var valorTotal = fluxoCaixaRepository.valorCaixa() + entrada.getValorEntrada();
+            fluxoCaixa.setDescricao(relatorio);
+            fluxoCaixa.setQuarto(entrada.getQuarto().getNumero());
+            fluxoCaixa.setValorEntrada(entrada.getValorEntrada());
+            fluxoCaixa.setValorSaida(0D);
+            fluxoCaixa.setValorTotal(valorTotal);
+
+            fluxoCaixaRepository.save(fluxoCaixa);
+            entradaRepository.save(entrada);
+        }
         return entrada;
+
     }
+
     private String validacaoRelatorio(String relatorio) {
-        LocalTime noite = LocalTime.of(18,0);
-        LocalTime dia = LocalTime.of(6,0);
+        LocalTime noite = LocalTime.of(18, 0);
+        LocalTime dia = LocalTime.of(6, 0);
 
         if (LocalTime.now().isBefore(noite) && LocalTime.now().isAfter(dia)) {
             relatorio = "Entrada dia!";
@@ -224,25 +193,24 @@ public class EntradaService {
 
     private void validacaoHorario(Entrada entrada) {
 
-        if (entrada.getStatusPagamento().equals(StatusPagamento.A_PAGAR)) {
 
-            LocalTime horarioEntrada = entrada.getHorarioEntrada();
-            LocalTime horarioSaida = LocalTime.now();
+        LocalTime horarioEntrada = entrada.getHorarioEntrada();
+        LocalTime horarioSaida = LocalTime.now();
+        entrada.setHorarioSaida(horarioSaida);
 
-            Duration tempoPermanecido = Duration.between(horarioEntrada, horarioSaida);
-            long minutosTotais = tempoPermanecido.toMinutes();
-            double custoAdicional = 0;
+        Duration tempoPermanecido = Duration.between(horarioEntrada, horarioSaida);
+        long minutosTotais = tempoPermanecido.toMinutes();
+        double custoAdicional = 0D;
 
-            if (minutosTotais > 120) {
-                custoAdicional = Math.ceil(minutosTotais / 30.0) * 5.0;
-            }
-
-            List<Consumo> consumos = entrada.getConsumos();
-            double totalConsumos = consumos.stream().mapToDouble(Consumo::getSubTotal).sum();
-            double valorTotal = entrada.getValorEntrada() + custoAdicional + totalConsumos;
-            entrada.setValorEntrada(valorTotal);
-            entrada.setHorarioSaida(horarioSaida);
+        if (minutosTotais > 120) {
+            custoAdicional = Math.ceil(minutosTotais / 30.0) * 5.0;
         }
+
+        List<Consumo> consumos = entrada.getConsumos();
+        double totalConsumos = consumos.stream().mapToDouble(Consumo::getSubTotal).sum();
+        double valorTotal = entrada.getValorEntrada() + custoAdicional + totalConsumos;
+        entrada.setValorEntrada(valorTotal);
+
     }
 
     public void excluir(Long entradaId) {

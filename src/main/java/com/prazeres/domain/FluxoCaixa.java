@@ -1,5 +1,6 @@
 package com.prazeres.domain;
 
+import com.prazeres.enums.TipoTransacao;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -16,12 +17,12 @@ public class FluxoCaixa implements Serializable {
     private Double valorEntrada;
     private Double valorSaida;
     private Double valorTotal;
-
+    private TipoTransacao tipo;
     public FluxoCaixa() {
     }
 
     public FluxoCaixa(Long id, LocalDateTime registroVenda, String descricao, Integer quarto, Double valorEntrada,
-                      Double valorSaida, Double valorTotal) {
+                      Double valorSaida, Double valorTotal, TipoTransacao tipo) {
         this.id = id;
         this.registroVenda = registroVenda;
         this.descricao = descricao;
@@ -29,10 +30,15 @@ public class FluxoCaixa implements Serializable {
         this.valorEntrada = valorEntrada;
         this.valorSaida = valorSaida;
         this.valorTotal = valorTotal;
+        this.tipo = tipo;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public LocalDateTime getRegistroVenda() {
@@ -49,6 +55,14 @@ public class FluxoCaixa implements Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public Integer getQuarto() {
+        return quarto;
+    }
+
+    public void setQuarto(Integer quarto) {
+        this.quarto = quarto;
     }
 
     public Double getValorEntrada() {
@@ -75,15 +89,11 @@ public class FluxoCaixa implements Serializable {
         this.valorTotal = valorTotal;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public TipoTransacao getTipo() {
+        return tipo;
     }
 
-    public Integer getQuarto() {
-        return quarto;
-    }
-
-    public void setQuarto(Integer quarto) {
-        this.quarto = quarto;
+    public void setTipo(TipoTransacao tipo) {
+        this.tipo = tipo;
     }
 }
