@@ -1,6 +1,7 @@
 package com.prazeres.controllers;
 
 import com.prazeres.domain.Consumo;
+import com.prazeres.domain.Entrada;
 import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.domain.record.ConsumoResponse;
 import com.prazeres.services.ConsumoService;
@@ -19,14 +20,14 @@ public class ConsumoController {
         this.consumoService = consumoService;
     }
     @GetMapping
-    public List<Consumo> listar() {
-        return consumoService.listar();
+    public List<ConsumoResponse> listar() {
+        return consumoService.findAll();
     }
 
-    @GetMapping("/findByEntradaId/{entradaId}")
+    @GetMapping("/{entradaId}")
     @ResponseStatus(HttpStatus.OK)
     public List<ConsumoResponse> buscar(@PathVariable Long entradaId) {
-        return consumoService.findConsumoByEntrdaId(entradaId);
+        return consumoService.buscarConsumoPorId(entradaId);
     }
 
     @PostMapping

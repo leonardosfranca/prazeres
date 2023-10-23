@@ -5,6 +5,7 @@ import com.prazeres.domain.exceptionhandler.EntidadeNaoEncontradaException;
 import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.enums.TipoTransacao;
 import com.prazeres.repositories.FluxoCaixaRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,9 +23,10 @@ public class FluxoCaixaService {
         return fluxoCaixaRepository.findAll();
     }
 
-    public FluxoCaixa buscarPorId(Long fluxoCaixaId) {
+    public ResponseEntity<FluxoCaixa> buscarPorId(Long fluxoCaixaId) {
         return fluxoCaixaRepository.findById(fluxoCaixaId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Fluxo não encontrado"));
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     public FluxoCaixa criar(FluxoCaixa fluxoCaixa) {
@@ -68,13 +70,17 @@ public class FluxoCaixaService {
         return fluxoCaixaRepository.save(fluxoCaixa);
     }
 
-    public void excluir(Long fluxoCaixaId) {
-        fluxoCaixaRepository.findById(fluxoCaixaId)
-                .orElseThrow(() -> new NegocioException("Fluxo não encontrado"));
+    public ResponseEntity<Void> excluir(Long fluxoCaixaId) {
+        if (!fluxoCaixaRepository.existsById(fluxoCaixaId)) {
+            return ResponseEntity.notFound().build();
+        }
         fluxoCaixaRepository.deleteById(fluxoCaixaId);
+        return ResponseEntity.noContent().build();
     }
 
-    public void deletAll(FluxoCaixa fluxoCaixa) {
+    public void exlcuirTudo(FluxoCaixa fluxoCaixa) {
         fluxoCaixaRepository.deleteAll();
     }
+
+
 }

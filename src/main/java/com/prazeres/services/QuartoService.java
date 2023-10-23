@@ -24,34 +24,36 @@ public class QuartoService {
         return quartoRepository.findAll();
     }
 
-    public Quarto buscarPorId(Long quartoId) {
-        return quartoRepository.findById(quartoId)
-                .orElseThrow(() -> new NegocioException("Quarto não encontrado"));
+    public List<Quarto> listarPorStatus(StatusQuarto statusQuarto) {
+        return quartoRepository.findAllByStatusQuarto(statusQuarto);
     }
 
+    public ResponseEntity<Quarto> buscar(Long quartoId) {
+        return quartoRepository.findById(quartoId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
     public Quarto salvar(Quarto quarto) {
         return quartoRepository.save(quarto);
     }
-    public Quarto atualizar(Long quartoId, Quarto requestQuarto) {
-        Quarto quarto = quartoRepository.findById(quartoId)
-                .orElseThrow(()-> new NegocioException("Quarto não encontrado"));
-        quarto.setStatusQuarto(requestQuarto.getStatusQuarto());
-        quarto.setTipoQuarto(requestQuarto.getTipoQuarto());
-        quarto.setCapacidadePessoas(requestQuarto.getCapacidadePessoas());
-        return quartoRepository.save(quarto);
+
+    public ResponseEntity<Quarto> atualizar(Long quartoId,
+                                            Quarto requestQuarto) {
+        if (!quartoRepository.existsById(quartoId)) {
+            return ResponseEntity.notFound().build();
+        }
+        requestQuarto.setId(quartoId);
+        Quarto quartoAtuazlizado = quartoRepository.save(requestQuarto);
+
+        return ResponseEntity.ok(quartoAtuazlizado);
     }
 
-    public void excluir(Long quartoId) {
-        Quarto quarto = quartoRepository.findById(quartoId)
-                .orElseThrow(()-> new NegocioException("Quarto não encontrado"));
+    public ResponseEntity<Void> remover(Long quartoId) {
         if (!quartoRepository.existsById(quartoId)) {
-            ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build();
         }
         quartoRepository.deleteById(quartoId);
-    }
-
-    public List<Quarto> listarPorStatus(StatusQuarto statusQuarto) {
-        return quartoRepository.findAllByStatusQuarto(statusQuarto);
+        return ResponseEntity.noContent().build();
     }
 
     public void fazerCheckOut(Long quartoId) {

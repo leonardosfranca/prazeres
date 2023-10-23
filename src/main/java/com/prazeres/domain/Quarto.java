@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Entity
 public class Quarto implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private Integer numero;
     private Integer capacidadePessoas;
@@ -22,10 +22,10 @@ public class Quarto implements Serializable {
 
     public Quarto() {
     }
-    public Quarto(Long id, String descricao, Integer capacidadePessoas, StatusQuarto statusQuarto, TipoQuarto tipoQuarto) {
+    public Quarto(Long id, Integer capacidadePessoas, StatusQuarto statusQuarto, TipoQuarto tipoQuarto) {
     }
 
-    public Quarto(Long id, Integer numero, String descricao, Integer capacidadePessoas, StatusQuarto statusQuarto,
+    public Quarto(Long id, Integer numero, Integer capacidadePessoas, StatusQuarto statusQuarto,
                   TipoQuarto tipoQuarto) {
         this.id = id;
         this.numero = numero;

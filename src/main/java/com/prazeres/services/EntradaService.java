@@ -5,7 +5,8 @@ import com.prazeres.domain.Entrada;
 import com.prazeres.domain.FluxoCaixa;
 import com.prazeres.domain.Quarto;
 import com.prazeres.domain.exceptionhandler.NegocioException;
-import com.prazeres.domain.record.ConsumoResumoResponse;
+import com.prazeres.domain.record.ConsumoResponse;
+//import com.prazeres.domain.record.ConsumoResumoResponse;
 import com.prazeres.domain.record.EntradaListaResponse;
 import com.prazeres.domain.record.EntradaResponse;
 import com.prazeres.enums.StatusEntrada;
@@ -20,6 +21,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,7 +40,8 @@ public class EntradaService {
     private final FluxoCaixaRepository fluxoCaixaRepository;
 
     public EntradaService(EntradaRepository entradaRepository, QuartoRepository quartoRepository,
-                          ConsumoService consumoService, ConsumoRepository consumoRepository, FluxoCaixaRepository fluxoCaixaRepository) {
+                          ConsumoService consumoService, ConsumoRepository consumoRepository,
+                          FluxoCaixaRepository fluxoCaixaRepository) {
         this.entradaRepository = entradaRepository;
         this.quartoRepository = quartoRepository;
         this.consumoService = consumoService;
@@ -51,12 +55,12 @@ public class EntradaService {
         listaEntrada.forEach(listaEntrada1 -> {
             EntradaListaResponse entradaListaResponse = new EntradaListaResponse(
                     listaEntrada1.getId(),
+                    listaEntrada1.getDataRegistro(),
                     listaEntrada1.getPlacaVeiculo(),
                     listaEntrada1.getQuarto(),
                     listaEntrada1.getHorarioEntrada(),
                     listaEntrada1.getHorarioSaida(),
                     listaEntrada1.getStatusEntrada(),
-                    listaEntrada1.getDataRegistro(),
                     listaEntrada1.getStatusPagamento());
             entradaListaResponseList.add(entradaListaResponse);
         });
@@ -81,15 +85,15 @@ public class EntradaService {
         return entradas;
     }
 
-    public EntradaResponse buscarPorId(Long entradaId) {
-        var entrada = entradaRepository.findById(entradaId)
+   public EntradaResponse buscar(Long entradaId) {
+        Entrada entrada = entradaRepository.findById(entradaId)
                 .orElseThrow(() -> new NegocioException("Consumo não encontrada"));
-        var listaConsumo = consumoService.findConsumoByEntrdaId(entradaId);
-
-        List<ConsumoResumoResponse> consumoResumoResponseList = new ArrayList<>();
+        List<ConsumoResponse> listaConsumo = consumoService.findAll();
+        List<ConsumoResponse> consumoResumoResponseList = new ArrayList<>();
 
         listaConsumo.forEach(consumno -> {
-            ConsumoResumoResponse consumoResumoResponse = new ConsumoResumoResponse(
+            ConsumoResponse consumoResumoResponse = new ConsumoResponse(
+                    consumno.entrada(),
                     consumno.quantidade(),
                     consumno.descricao(),
                     consumno.valor()
@@ -142,9 +146,9 @@ public class EntradaService {
         entrada.setHorarioEntrada(LocalTime.now());
         entrada.setDataRegistro(LocalDate.now());
         entrada.setStatusEntrada(StatusEntrada.EM_ANDAMENTO);
-        entrada.setStatusPagamento(StatusPagamento.PENDENTE);
+        entrada.setStatusPagamento(StatusPagamento.A_PAGAR);
         quarto.setStatusQuarto(StatusQuarto.OCUPADO);
-        entrada.setTipoPagamento(TipoPagamento.A_PAGAR);
+        entrada.setTipoPagamento(TipoPagamento.PENDENTE);
     }
 
     public Entrada atualizar(Long entradaId, Entrada entradaRequest) {
@@ -160,23 +164,23 @@ public class EntradaService {
         if (!entradaRequest.getTipoPagamento().equals(TipoPagamento.PENDENTE)) {
             validacaoHorario(entrada);
 
+            if (entradaRequest.getStatusPagamento().equals(StatusPagamento.FINALIZADO)) {
+                FluxoCaixa fluxoCaixa = new FluxoCaixa();
+                fluxoCaixa.setRegistroVenda(LocalDateTime.now());
+                var relatorio = validacaoRelatorio(fluxoCaixa.getDescricao());
 
-            FluxoCaixa fluxoCaixa = new FluxoCaixa();
-            fluxoCaixa.setRegistroVenda(LocalDateTime.now());
-            var relatorio = validacaoRelatorio(fluxoCaixa.getDescricao());
+                var valorTotal = fluxoCaixaRepository.valorCaixa() + entrada.getValorEntrada();
+                fluxoCaixa.setDescricao(relatorio);
+                fluxoCaixa.setQuarto(entrada.getQuarto().getNumero());
+                fluxoCaixa.setValorEntrada(entrada.getValorEntrada());
+                fluxoCaixa.setValorSaida(0D);
+                fluxoCaixa.setValorTotal(valorTotal);
 
-            var valorTotal = fluxoCaixaRepository.valorCaixa() + entrada.getValorEntrada();
-            fluxoCaixa.setDescricao(relatorio);
-            fluxoCaixa.setQuarto(entrada.getQuarto().getNumero());
-            fluxoCaixa.setValorEntrada(entrada.getValorEntrada());
-            fluxoCaixa.setValorSaida(0D);
-            fluxoCaixa.setValorTotal(valorTotal);
-
-            fluxoCaixaRepository.save(fluxoCaixa);
-            entradaRepository.save(entrada);
+                fluxoCaixaRepository.save(fluxoCaixa);
+                entradaRepository.save(entrada);
+            }
         }
         return entrada;
-
     }
 
     private String validacaoRelatorio(String relatorio) {
@@ -192,25 +196,30 @@ public class EntradaService {
     }
 
     private void validacaoHorario(Entrada entrada) {
-
-
         LocalTime horarioEntrada = entrada.getHorarioEntrada();
         LocalTime horarioSaida = LocalTime.now();
         entrada.setHorarioSaida(horarioSaida);
 
         Duration tempoPermanecido = Duration.between(horarioEntrada, horarioSaida);
         long minutosTotais = tempoPermanecido.toMinutes();
+        double taxaCustoAdicionalPorHora = 5.0;
+
         double custoAdicional = 0D;
 
         if (minutosTotais > 120) {
-            custoAdicional = Math.ceil(minutosTotais / 30.0) * 5.0;
+            custoAdicional = Math.ceil(minutosTotais / 30.0) * taxaCustoAdicionalPorHora;
         }
+        double valorTotal = entrada.getValorEntrada() + custoAdicional;
+        long valorTotalArredondado = Math.round(valorTotal);
+        entrada.setValorEntrada(valorTotal);
 
         List<Consumo> consumos = entrada.getConsumos();
         double totalConsumos = consumos.stream().mapToDouble(Consumo::getSubTotal).sum();
-        double valorTotal = entrada.getValorEntrada() + custoAdicional + totalConsumos;
-        entrada.setValorEntrada(valorTotal);
+        long valorConsumoArredondado = Math.round(valorTotal);
 
+
+        valorTotalArredondado += valorConsumoArredondado;
+        entrada.setValorEntrada((double) valorTotalArredondado);
     }
 
     public void excluir(Long entradaId) {
@@ -226,7 +235,6 @@ public class EntradaService {
             quarto.setStatusQuarto(StatusQuarto.LIBERADO);
             quartoRepository.save(quarto);
         }
-
         entradaRepository.deleteById(entradaId);
     }
 }

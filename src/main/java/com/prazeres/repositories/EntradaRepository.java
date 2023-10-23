@@ -14,6 +14,7 @@ public interface EntradaRepository extends JpaRepository<Entrada, Long> {
     List<Entrada> findAllByDataRegistro(LocalDate dataRegistro);
 
 
+
 }
 
 

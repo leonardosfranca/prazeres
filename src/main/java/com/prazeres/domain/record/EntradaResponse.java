@@ -11,7 +11,7 @@ import java.util.List;
 public record EntradaResponse(
         String placaVeiculo,
         Quarto quarto,
-        List<ConsumoResumoResponse> consumo,
+        List<ConsumoResponse> consumoResumoResponseList,
         LocalTime horarioEntrada,
         StatusEntrada statusEntrada,
         LocalDate dataRegistro,

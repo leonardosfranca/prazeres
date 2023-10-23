@@ -20,22 +20,20 @@ public class SwaggerConfig{
 
     private Info createInfo(){
         var info = new Info();
-        info.setTitle("API RH");
-        info.setDescription("API de serviço para sistema de RH da SEAP");
+        info.setTitle("API Hotel");
+        info.setDescription("API de serviço para sistema de hotelaria");
         info.setVersion("v1");
         return info;
     }
     private Contact createContact(){
         var contato = new Contact();
-        contato.setName("Supervisão de Desenvolvimento de Sistemas");
-        contato.setEmail("desenvolvimento@seap.ma.gov.br");
-        contato.setUrl("https://seap.ma.gov.br");
+        contato.setName("Desenvolvimento de Sistemas");
+        contato.setEmail("leonardo5155@gmail.com");
         return contato;
     }
     private License createLicense(){
         var licenca = new License();
-        licenca.setName("Copyright (C) Secretaria de Estado Administração Penitenciária - Todos os direitos reservados ");
-        licenca.setUrl("https://seap.ma.gov.br");
+        licenca.setName("Copyright (C) Leonardo França - Todos os direitos reservados ");
         return licenca;
     }
 }

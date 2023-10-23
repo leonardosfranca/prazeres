@@ -3,6 +3,7 @@ package com.prazeres.services;
 import com.prazeres.domain.Item;
 import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.repositories.ItemRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,12 @@ public class ItemService {
 
     public List<Item> listar() {
         return itemRepository.findAll();
+    }
+
+    public ResponseEntity<Item> buscarId(Long itemId) {
+        return itemRepository.findById(itemId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     public Item adicionar(Item itemId) {
@@ -38,10 +45,5 @@ public class ItemService {
 
     public void excluir(Long itemId) {
         itemRepository.deleteById(itemId);
-    }
-
-    public Item buscarId(Long itemId) {
-        return itemRepository.findById(itemId)
-                .orElseThrow(() -> new NegocioException("Item não encontrado"));
     }
 }

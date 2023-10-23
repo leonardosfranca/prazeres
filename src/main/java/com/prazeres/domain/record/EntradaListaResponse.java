@@ -9,15 +9,13 @@ import java.time.LocalTime;
 
 public record EntradaListaResponse(
         Long id,
+        LocalDate dataRegistro,
         String placaVeiculo,
         Quarto quarto,
         LocalTime horarioEntrada,
         LocalTime horarioSaida,
         StatusEntrada statusEntrada,
-        LocalDate dataRegistro,
         StatusPagamento statusPagamento
 
-) {
-
-
+    ){
 }

@@ -25,8 +25,9 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public Item buscarId(@PathVariable Long itemId) {
+    public ResponseEntity<Item> buscarId(@PathVariable Long itemId) {
         return itemService.buscarId(itemId);
+
     }
 
     @PostMapping

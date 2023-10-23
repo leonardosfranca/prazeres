@@ -1,6 +1,7 @@
 package com.prazeres.controllers;
 
 import com.prazeres.domain.Entrada;
+import com.prazeres.domain.Quarto;
 import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.domain.record.EntradaListaResponse;
 import com.prazeres.domain.record.EntradaResponse;
@@ -26,39 +27,34 @@ public class EntradaController {
     }
 
     @GetMapping("/listarPorEntrada")
-    @ResponseStatus(HttpStatus.OK)
     public List<EntradaListaResponse> listarPorEntrada() {
         return entradaService.findAll();
     }
 
     @GetMapping("/{buscarPorId}")
-    @ResponseStatus(HttpStatus.OK)
-    public Entrada buscarPorId(@PathVariable Long buscarPorId) {
+    public ResponseEntity<Entrada> buscarPorId(@PathVariable Long buscarPorId) {
         return entradaRepository.findById(buscarPorId)
-                .orElseThrow(() -> new NegocioException("Id não encontrado"));
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/statusEntrada")
-    @ResponseStatus(HttpStatus.OK)
     public List<Entrada> listarPorStatus(StatusEntrada statusEntrada) {
         return entradaService.listarPorStatus(statusEntrada);
     }
     @GetMapping("/dataAtual")
-    @ResponseStatus(HttpStatus.OK)
     public List<Entrada> listarDataAtual() {
         return entradaService.listarPorDataAtual();
     }
 
     @GetMapping("/dataRegistro")
-    @ResponseStatus(HttpStatus.OK)
     public List<Entrada> listarPorDataRegistro(LocalDate dataRegistro) {
         return entradaService.listarPorDataRegistro(dataRegistro);
     }
 
     @GetMapping("/buscarTodosOsConsumosPorIdEntrada/{entradaId}")
-    @ResponseStatus(HttpStatus.OK)
     public EntradaResponse buscarTodosOsConsumosPorIdEntrada(@PathVariable Long entradaId) {
-        return entradaService.buscarPorId(entradaId);
+        return entradaService.buscar(entradaId);
     }
 
     @PostMapping

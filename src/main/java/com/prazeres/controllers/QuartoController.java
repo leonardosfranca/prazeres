@@ -4,7 +4,6 @@ import com.prazeres.domain.Quarto;
 import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.enums.StatusQuarto;
 import com.prazeres.services.QuartoService;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,39 +24,38 @@ public class QuartoController {
         return quartoService.listar();
     }
 
-    @GetMapping("/{quartoId}")
-    @ResponseStatus(HttpStatus.OK)
-    public Quarto buscarPorId(@PathVariable Long quartoId) {
-        return quartoService.buscarPorId(quartoId);
-    }
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Quarto salvar(@RequestBody Quarto quarto) {
-        return quartoService.salvar(quarto);
-    }
-
-    @PutMapping("/{quartoId}")
-    public Quarto atualizar(@PathVariable Long quartoId,
-                            Quarto quarto) {
-        return quartoService.atualizar(quartoId, quarto);
-    }
-
-    @DeleteMapping("/{quartoId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void excluir(@PathVariable Long quartoId) {
-        quartoService.excluir(quartoId);
-    }
-
     @GetMapping("/statusQuarto")
     @ResponseStatus(HttpStatus.OK)
     public List<Quarto> listarPorStatus(StatusQuarto statusQuarto) {
         return quartoService.listarPorStatus(statusQuarto);
     }
 
+    @GetMapping("/{quartoId}")
+    public ResponseEntity<Quarto> buscarPorId(@PathVariable Long quartoId) {
+        return quartoService.buscar(quartoId);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Quarto adicionar(@RequestBody Quarto quarto) {
+        return quartoService.salvar(quarto);
+    }
+
+    @PutMapping("/{quartoId}")
+    public ResponseEntity<Quarto> atualizar(@PathVariable Long quartoId,
+                                            @RequestBody Quarto quarto) {
+        return quartoService.atualizar(quartoId, quarto);
+    }
+
     @PostMapping("/{quartoId}")
     public void liberarQuarto(@PathVariable Long quartoId) {
-         quartoService.fazerCheckOut(quartoId);
+        quartoService.fazerCheckOut(quartoId);
+    }
+
+    @DeleteMapping("/{quartoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Void> excluir(@PathVariable Long quartoId) {
+        return quartoService.remover(quartoId);
     }
 
     @ExceptionHandler(NegocioException.class)

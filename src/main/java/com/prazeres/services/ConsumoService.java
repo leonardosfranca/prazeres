@@ -13,12 +13,27 @@ import java.util.List;
 public class ConsumoService {
 
     private final ConsumoRepository consumoRepository;
+
     public ConsumoService(ConsumoRepository consumoRepository) {
         this.consumoRepository = consumoRepository;
     }
-    public List<Consumo> listar() {
-        return consumoRepository.findAll();
+
+    public List<ConsumoResponse> findAll() {
+        var listaConsumo = consumoRepository.findAll();
+        List<ConsumoResponse> consumoResponseList = new ArrayList<>();
+        listaConsumo.forEach(listaConsumo1 -> {
+            ConsumoResponse consumoListaResponse = new ConsumoResponse(
+                    new ConsumoResponse.Entrada(
+                            listaConsumo1.getEntrada().getId()),
+                    listaConsumo1.getQuantidade(),
+                    listaConsumo1.getItem().getDescricao(),
+                    listaConsumo1.getSubTotal());
+            consumoResponseList.add(consumoListaResponse);
+        });
+
+        return consumoResponseList;
     }
+
 
     public Consumo salvar(Consumo consumo) {
         if (consumo.getEntrada().getId() == null || consumo.getEntrada().getId().describeConstable().isEmpty()) {
@@ -29,8 +44,8 @@ public class ConsumoService {
         return consumoRepository.save(consumo);
     }
 
-    public List<ConsumoResponse> findConsumoByEntrdaId(Long entradaId) {
-        var consumo = consumoRepository.findConsumoByEntradaId(entradaId);
+    public List<ConsumoResponse> buscarConsumoPorId(Long entradaId) {
+        var consumo = consumoRepository.findConsumosById(entradaId);
 
         if (consumo.isEmpty()) {
             throw new NegocioException("Não houve consumo");
@@ -39,13 +54,11 @@ public class ConsumoService {
         List<ConsumoResponse> consumoResponseList = new ArrayList<>();
         consumo.forEach(consumo1 -> {
             ConsumoResponse consumoResponse = new ConsumoResponse(
-                    new ConsumoResponse.Entrada(
-                            consumo1.getEntrada().getId(),
-                            consumo1.getEntrada().getQuarto().getCapacidadePessoas()),
-                            consumo1.getQuantidade(),
-                            consumo1.getItem().getDescricao(),
-                            consumo1.getSubTotal());
-                            consumoResponseList.add(consumoResponse);
+                    new ConsumoResponse.Entrada(consumo1.getEntrada().getId()),
+            consumo1.getQuantidade(),
+            consumo1.getItem().getDescricao(),
+            consumo1.getSubTotal());
+            consumoResponseList.add(consumoResponse);
         });
         return consumoResponseList;
     }
