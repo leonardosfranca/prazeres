@@ -8,7 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface ConsumoRepository extends JpaRepository<Consumo, Long> {
-    List<Consumo> findConsumosById(Long consumoId);
-    @Query(value = "select sum(sub_total)  from consumo c   ", nativeQuery = true)
-    Float valorConsumo ();
+    List<Consumo> findAllByEntrada_Id(Long consumoId);
+    @Query(value = "select sum(c.valor)  from Consumo c  where c.entrada.id =:id")
+    Float valorConsumo (Long id);
+
 }

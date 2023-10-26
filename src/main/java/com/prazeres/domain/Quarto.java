@@ -1,10 +1,8 @@
 package com.prazeres.domain;
 
-import com.prazeres.domain.record.EntradaListaResponse;
 import com.prazeres.enums.StatusQuarto;
 import com.prazeres.enums.TipoQuarto;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.io.Serializable;
 

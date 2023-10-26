@@ -16,17 +16,19 @@ public class Consumo implements Serializable {
     @OneToOne
     @JoinColumn(name = "entrada_id")
     private Entrada entrada;
-    private Double subTotal;
+    private Double valor;
+    private Double valorTotal;
 
     public Consumo() {
     }
 
-    public Consumo(Long id, Integer quantidade, Item item, Entrada entrada, Double subTotal) {
+    public Consumo(Long id, Integer quantidade, Item item, Entrada entrada, Double valor, Double valorTotal) {
         this.id = id;
         this.quantidade = quantidade;
         this.item = item;
         this.entrada = entrada;
-        this.subTotal = subTotal;
+        this.valor = valor;
+        this.valorTotal = valorTotal;
     }
 
     public Long getId() {
@@ -57,11 +59,23 @@ public class Consumo implements Serializable {
         this.entrada = entrada;
     }
 
-    public Double getSubTotal() {
-        return subTotal;
+    public Double getValor() {
+        return valor;
     }
 
-    public void setSubTotal(Double subTotal) {
-        this.subTotal = subTotal;
+    public void setValor(Double subTotal) {
+        this.valor = subTotal;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Double getValorTotal() {
+        return valorTotal;
+    }
+
+    public void setValorTotal(Double valorTotal) {
+        this.valorTotal = valorTotal;
     }
 }

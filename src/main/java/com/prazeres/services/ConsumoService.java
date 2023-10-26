@@ -20,18 +20,16 @@ public class ConsumoService {
 
     public List<ConsumoResponse> findAll() {
         var listaConsumo = consumoRepository.findAll();
-        List<ConsumoResponse> consumoResponseList = new ArrayList<>();
+        List<ConsumoResponse> consumo = new ArrayList<>();
         listaConsumo.forEach(listaConsumo1 -> {
             ConsumoResponse consumoListaResponse = new ConsumoResponse(
-                    new ConsumoResponse.Entrada(
-                            listaConsumo1.getEntrada().getId()),
                     listaConsumo1.getQuantidade(),
                     listaConsumo1.getItem().getDescricao(),
-                    listaConsumo1.getSubTotal());
-            consumoResponseList.add(consumoListaResponse);
+                            listaConsumo1.getValor());
+            consumo.add(consumoListaResponse);
         });
 
-        return consumoResponseList;
+        return consumo;
     }
 
 
@@ -40,27 +38,26 @@ public class ConsumoService {
             throw new NegocioException("Entrada não informada");
         }
         var subTotal = consumo.getQuantidade() * consumo.getItem().getValor();
-        consumo.setSubTotal(subTotal);
+        consumo.setValor(subTotal);
         return consumoRepository.save(consumo);
     }
 
     public List<ConsumoResponse> buscarConsumoPorId(Long entradaId) {
-        var consumo = consumoRepository.findConsumosById(entradaId);
+        var consumo = consumoRepository.findAllByEntrada_Id(entradaId);
 
         if (consumo.isEmpty()) {
             throw new NegocioException("Não houve consumo");
         }
 
-        List<ConsumoResponse> consumoResponseList = new ArrayList<>();
+        List<ConsumoResponse> consumoList = new ArrayList<>();
         consumo.forEach(consumo1 -> {
             ConsumoResponse consumoResponse = new ConsumoResponse(
-                    new ConsumoResponse.Entrada(consumo1.getEntrada().getId()),
             consumo1.getQuantidade(),
             consumo1.getItem().getDescricao(),
-            consumo1.getSubTotal());
-            consumoResponseList.add(consumoResponse);
+            consumo1.getValor());
+            consumoList.add(consumoResponse);
         });
-        return consumoResponseList;
+        return consumoList;
     }
 
     public void excluir(Long consumoId) {

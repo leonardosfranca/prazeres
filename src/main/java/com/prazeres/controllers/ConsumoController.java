@@ -24,7 +24,7 @@ public class ConsumoController {
         return consumoService.findAll();
     }
 
-    @GetMapping("/{entradaId}")
+    @GetMapping("/findConsumoBy/{entradaId}")
     @ResponseStatus(HttpStatus.OK)
     public List<ConsumoResponse> buscar(@PathVariable Long entradaId) {
         return consumoService.buscarConsumoPorId(entradaId);

@@ -1,13 +1,14 @@
 package com.prazeres.domain.record;
 
-import com.prazeres.domain.Quarto;
 import com.prazeres.enums.StatusEntrada;
 import com.prazeres.enums.StatusPagamento;
+import com.prazeres.enums.StatusQuarto;
+import com.prazeres.enums.TipoQuarto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record EntradaListaResponse(
+public record EntradaResumoResponse(
         Long id,
         LocalDate dataRegistro,
         String placaVeiculo,
@@ -18,4 +19,8 @@ public record EntradaListaResponse(
         StatusPagamento statusPagamento
 
     ){
+    public record Quarto(
+            StatusQuarto statusQuarto,
+            TipoQuarto tipoQuarto
+    ){}
 }

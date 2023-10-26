@@ -1,9 +1,8 @@
 package com.prazeres.controllers;
 
 import com.prazeres.domain.Entrada;
-import com.prazeres.domain.Quarto;
 import com.prazeres.domain.exceptionhandler.NegocioException;
-import com.prazeres.domain.record.EntradaListaResponse;
+import com.prazeres.domain.record.EntradaResumoResponse;
 import com.prazeres.domain.record.EntradaResponse;
 import com.prazeres.enums.StatusEntrada;
 import com.prazeres.repositories.EntradaRepository;
@@ -27,20 +26,18 @@ public class EntradaController {
     }
 
     @GetMapping("/listarPorEntrada")
-    public List<EntradaListaResponse> listarPorEntrada() {
+    public List<EntradaResumoResponse> listarPorEntrada() {
         return entradaService.findAll();
     }
 
-    @GetMapping("/{buscarPorId}")
-    public ResponseEntity<Entrada> buscarPorId(@PathVariable Long buscarPorId) {
-        return entradaRepository.findById(buscarPorId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/{entradaId}")
+    public Entrada buscaEntradaId(@PathVariable Long entradaId) {
+        return entradaService.buscaEntradaId(entradaId);
     }
 
     @GetMapping("/statusEntrada")
     public List<Entrada> listarPorStatus(StatusEntrada statusEntrada) {
-        return entradaService.listarPorStatus(statusEntrada);
+        return entradaService.listarPorStatusEntrada(statusEntrada);
     }
     @GetMapping("/dataAtual")
     public List<Entrada> listarDataAtual() {
@@ -74,7 +71,6 @@ public class EntradaController {
     public void excluir(@PathVariable Long entradaId) {
         entradaService.excluir(entradaId);
     }
-
 
     @ExceptionHandler(NegocioException.class)
     public ResponseEntity<String> capturar(NegocioException e) {

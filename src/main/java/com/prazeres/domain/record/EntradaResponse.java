@@ -9,25 +9,19 @@ import java.time.LocalTime;
 import java.util.List;
 
 public record EntradaResponse(
-        String placaVeiculo,
         Quarto quarto,
-        List<ConsumoResponse> consumoResumoResponseList,
+        LocalDate dataRegistro,
         LocalTime horarioEntrada,
         StatusEntrada statusEntrada,
-        LocalDate dataRegistro,
         TipoPagamento tipoPagamento,
         StatusPagamento statusPagamento,
-        Float valorConsumo,
+        List<ConsumoResponse> consumo,
         Double valorEntrada,
+        Double totalConsumo,
         Double valorTotal
 
         ) {
     public record Quarto(
             Integer numero
-    ) {}
-
-    public record Consumo(
-            String descricao,
-            Double valor
     ) {}
 }

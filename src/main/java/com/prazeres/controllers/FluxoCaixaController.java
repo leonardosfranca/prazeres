@@ -1,14 +1,13 @@
 package com.prazeres.controllers;
 
 import com.prazeres.domain.FluxoCaixa;
+import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.services.FluxoCaixaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/fluxoCaixas")
@@ -25,21 +24,14 @@ public class FluxoCaixaController {
     }
 
     @GetMapping("/{fluxoCaixaId}")
-    public ResponseEntity<FluxoCaixa> buscarPorId(@PathVariable Long fluxoCaixaId) {
+    public FluxoCaixa buscarPorId(@PathVariable Long fluxoCaixaId) {
         return fluxoCaixaService.buscarPorId(fluxoCaixaId);
     }
 
     @PostMapping
-    public FluxoCaixa criar(FluxoCaixa fluxoCaixa) {
-        return fluxoCaixaService.criar(fluxoCaixa);
-    }
-    @GetMapping("/total")
-    public Map<String, Double> obterTotal() {
-        Map<String, Double> total = new HashMap<>();
-        total.put("entradaTotal", fluxoCaixaService.entradaTotal());
-        total.put("saidaTotal", fluxoCaixaService.saidaTotal());
-        total.put("saldoTotal", fluxoCaixaService.saldoTotal());
-        return total;
+    @ResponseStatus(HttpStatus.CREATED)
+    public FluxoCaixa salvar(FluxoCaixa entrada) {
+        return fluxoCaixaService.salvarFluxoCaixa(entrada);
     }
 
     @PutMapping("/{fluxoCaixaId}")
@@ -57,6 +49,11 @@ public class FluxoCaixaController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     private void deleteAll(FluxoCaixa fluxoCaixa) {
         fluxoCaixaService.exlcuirTudo(fluxoCaixa);
+    }
+
+    @ExceptionHandler(NegocioException.class)
+    public ResponseEntity<String> capturar(NegocioException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
 }

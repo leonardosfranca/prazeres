@@ -3,62 +3,56 @@ package com.prazeres.services;
 import com.prazeres.domain.FluxoCaixa;
 import com.prazeres.domain.exceptionhandler.EntidadeNaoEncontradaException;
 import com.prazeres.domain.exceptionhandler.NegocioException;
-import com.prazeres.enums.TipoTransacao;
+import com.prazeres.repositories.EntradaRepository;
 import com.prazeres.repositories.FluxoCaixaRepository;
+import com.prazeres.repositories.QuartoRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class FluxoCaixaService {
     private final FluxoCaixaRepository fluxoCaixaRepository;
+    private final EntradaRepository entradaRepository;
+    private List<FluxoCaixa> entradas = new ArrayList<>();
 
-    public FluxoCaixaService(FluxoCaixaRepository fluxoCaixaRepository) {
+    public FluxoCaixaService(FluxoCaixaRepository fluxoCaixaRepository, QuartoRepository quartoRepository, EntradaRepository entradaRepository) {
         this.fluxoCaixaRepository = fluxoCaixaRepository;
+        this.entradaRepository = entradaRepository;
     }
 
     public List<FluxoCaixa> listar() {
         return fluxoCaixaRepository.findAll();
     }
 
-    public ResponseEntity<FluxoCaixa> buscarPorId(Long fluxoCaixaId) {
+    public FluxoCaixa buscarPorId(Long fluxoCaixaId) {
         return fluxoCaixaRepository.findById(fluxoCaixaId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Id não encontrado"));
     }
 
-    public FluxoCaixa criar(FluxoCaixa fluxoCaixa) {
-        if (fluxoCaixa.getValorEntrada() == null) {
-            fluxoCaixa.setValorEntrada(0.0);
-        }
-        Double valorCaixa = fluxoCaixaRepository.valorCaixa();
-        if (valorCaixa == null) {
-            valorCaixa = 0.0;
-        }
-        if (fluxoCaixa.getTipo() == TipoTransacao.SAIDA) {
-            if (fluxoCaixa.getValorEntrada() > 0.0 && fluxoCaixa.getValorEntrada() > fluxoCaixa.getValorTotal()) {
-                throw new NegocioException("A saida não pode ser maior que a entrada");
-            }
-        }
-        return fluxoCaixaRepository.save(fluxoCaixa);
-    }
-    public Double entradaTotal() {
-        List<FluxoCaixa> entradas = fluxoCaixaRepository.findByTipo(TipoTransacao.ENTRADA);
-        return entradas.stream()
-                .mapToDouble(FluxoCaixa::getValorEntrada)
-                .sum();
-    }
+    public FluxoCaixa salvarFluxoCaixa(FluxoCaixa fluxo) {
+        FluxoCaixa fluxoCaixa = new FluxoCaixa();
 
-    public Double saidaTotal() {
-        List<FluxoCaixa> saida = fluxoCaixaRepository.findByTipo(TipoTransacao.SAIDA);
-        return saida.stream()
-                .mapToDouble(FluxoCaixa::getValorEntrada)
-                .sum();
-    }
-    public Double saldoTotal() {
-        return entradaTotal() - saidaTotal();
+        if (fluxo.getValorSaida() > fluxo.getValorTotal()) {
+            throw new NegocioException("Valor de saída não permitido, verifique o saldo");
+        }
+
+        if (fluxo.getValorEntrada() == null) {
+            fluxo.setValorEntrada(0.0);
+        }
+
+        if (fluxo.getValorSaida() == null) {
+            fluxo.setValorSaida(0.0);
+        }
+
+        fluxo.setValorTotal(fluxo.getValorEntrada() - fluxo.getValorSaida());
+        fluxoCaixa.setRegistroVenda(LocalDateTime.now());
+
+        var fluxoRepositorio = fluxoCaixaRepository.save(fluxo);
+        return fluxoRepositorio;
     }
 
     public FluxoCaixa atualizar(Long fluxoCaixaId, FluxoCaixa fluxoCaixaRequest) {
