@@ -2,6 +2,7 @@ package com.prazeres.controllers;
 
 import com.prazeres.domain.FluxoCaixa;
 import com.prazeres.domain.exceptionhandler.NegocioException;
+import com.prazeres.enums.TipoMovimentacao;
 import com.prazeres.services.FluxoCaixaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/fluxoCaixas")
+@RequestMapping("/movimentacoes")
 public class FluxoCaixaController {
 
     private final FluxoCaixaService fluxoCaixaService;
@@ -18,39 +19,36 @@ public class FluxoCaixaController {
         this.fluxoCaixaService = fluxoCaixaService;
     }
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<FluxoCaixa> listar() {
-        return fluxoCaixaService.listar();
+    public List<FluxoCaixa> listarTodasMovimentacoes() {
+        return fluxoCaixaService.listarTodasMovimentacoes();
     }
 
     @GetMapping("/{fluxoCaixaId}")
-    public FluxoCaixa buscarPorId(@PathVariable Long fluxoCaixaId) {
-        return fluxoCaixaService.buscarPorId(fluxoCaixaId);
+    public FluxoCaixa buscarMovimentacoesPorId(@PathVariable Long fluxoCaixaId) {
+        return fluxoCaixaService.buscarMovimentacoesPorId(fluxoCaixaId);
     }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FluxoCaixa salvar(FluxoCaixa entrada) {
-        return fluxoCaixaService.salvarFluxoCaixa(entrada);
+    public FluxoCaixa criarMovimentacao(FluxoCaixa entrada) {
+        return fluxoCaixaService.criarMovimentacao(entrada);
     }
 
-    @PutMapping("/{fluxoCaixaId}")
-    public FluxoCaixa atualizar(@PathVariable Long fluxoCaixaId, FluxoCaixa fluxoCaixa) {
-        return fluxoCaixaService.atualizar(fluxoCaixaId, fluxoCaixa);
+    @GetMapping("/entrada")
+    public List<FluxoCaixa> listarMovimentacoesEntrada() {
+        return fluxoCaixaService.listarMovimentacoesEntrada();
     }
 
-    @DeleteMapping("/{fluxoCaixaId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void remover(@PathVariable Long fluxoCaixaId) {
-        fluxoCaixaService.excluir(fluxoCaixaId);
+    @GetMapping("/saida")
+    public List<FluxoCaixa> listarMovimentacoesSaida() {
+        return fluxoCaixaService.listarMovimentacoesSaida();
     }
 
-    @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    private void deleteAll(FluxoCaixa fluxoCaixa) {
-        fluxoCaixaService.exlcuirTudo(fluxoCaixa);
+    @GetMapping("/total")
+    public double calcularTotal() {
+         fluxoCaixaService.listarMovimentacoesEntrada();
+         fluxoCaixaService.listarMovimentacoesSaida();
+        return fluxoCaixaService.calcularTotal();
     }
-
     @ExceptionHandler(NegocioException.class)
     public ResponseEntity<String> capturar(NegocioException e) {
         return ResponseEntity.badRequest().body(e.getMessage());

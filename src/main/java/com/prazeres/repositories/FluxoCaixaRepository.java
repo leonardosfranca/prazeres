@@ -1,7 +1,7 @@
 package com.prazeres.repositories;
 
 import com.prazeres.domain.FluxoCaixa;
-import com.prazeres.enums.TipoTransacao;
+import com.prazeres.enums.TipoMovimentacao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,5 +14,5 @@ public interface FluxoCaixaRepository extends JpaRepository<FluxoCaixa, Long> {
     @Query(value = "select max (fc.valor_total) from fluxo_caixa fc", nativeQuery = true)
     Double valorCaixa();
 
-    List<FluxoCaixa> findByTipo(TipoTransacao tipoTransacao);
+    List<FluxoCaixa> findByTipo(TipoMovimentacao tipoMovimentacao);
 }

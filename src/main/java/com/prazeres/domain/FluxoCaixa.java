@@ -1,9 +1,10 @@
 package com.prazeres.domain;
 
-import com.prazeres.enums.TipoTransacao;
+import com.prazeres.enums.TipoMovimentacao;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,23 +12,20 @@ public class FluxoCaixa implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDateTime registroVenda;
+    private LocalDate registroVenda;
     private String descricao;
-    private TipoTransacao tipo;
-    private Double valorEntrada;
-    private Double valorSaida;
-    private Double valorTotal;
+    private TipoMovimentacao tipo;
+    private Double valor;
 
     public FluxoCaixa() {
     }
 
-    public FluxoCaixa(Long id, LocalDateTime registroVenda, String descricao, TipoTransacao tipo, Double valorSaida, Double valorTotal) {
+    public FluxoCaixa(Long id, LocalDate registroVenda, String descricao, TipoMovimentacao tipo, Double valor) {
         this.id = id;
         this.registroVenda = registroVenda;
         this.descricao = descricao;
         this.tipo = tipo;
-        this.valorSaida = valorSaida;
-        this.valorTotal = valorTotal;
+        this.valor = valor;
     }
 
     public Long getId() {
@@ -38,11 +36,11 @@ public class FluxoCaixa implements Serializable {
         this.id = id;
     }
 
-    public LocalDateTime getRegistroVenda() {
+    public LocalDate getRegistroVenda() {
         return registroVenda;
     }
 
-    public void setRegistroVenda(LocalDateTime registroVenda) {
+    public void setRegistroVenda(LocalDate registroVenda) {
         this.registroVenda = registroVenda;
     }
 
@@ -54,35 +52,19 @@ public class FluxoCaixa implements Serializable {
         this.descricao = descricao;
     }
 
-    public TipoTransacao getTipo() {
+    public TipoMovimentacao getTipo() {
         return tipo;
     }
 
-    public void setTipo(TipoTransacao tipo) {
+    public void setTipo(TipoMovimentacao tipo) {
         this.tipo = tipo;
     }
 
-    public Double getValorEntrada() {
-        return valorEntrada;
+    public Double getValor() {
+        return valor;
     }
 
-    public void setValorEntrada(Double valorEntrada) {
-        this.valorEntrada = valorEntrada;
-    }
-
-    public Double getValorSaida() {
-        return valorSaida;
-    }
-
-    public void setValorSaida(Double valorSaida) {
-        this.valorSaida = valorSaida;
-    }
-
-    public Double getValorTotal() {
-        return valorTotal;
-    }
-
-    public void setValorTotal(Double valorTotal) {
-        this.valorTotal = valorTotal;
+    public void setValor(Double valor) {
+        this.valor = valor;
     }
 }

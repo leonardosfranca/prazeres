@@ -1,6 +1,6 @@
 package com.prazeres.enums;
 
-public enum TipoTransacao {
+public enum TipoMovimentacao {
     ENTRADA,
     SAIDA
 }

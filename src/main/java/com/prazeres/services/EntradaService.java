@@ -8,10 +8,7 @@ import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.domain.record.ConsumoResponse;
 import com.prazeres.domain.record.EntradaResponse;
 import com.prazeres.domain.record.EntradaResumoResponse;
-import com.prazeres.enums.StatusEntrada;
-import com.prazeres.enums.StatusPagamento;
-import com.prazeres.enums.StatusQuarto;
-import com.prazeres.enums.TipoPagamento;
+import com.prazeres.enums.*;
 import com.prazeres.repositories.ConsumoRepository;
 import com.prazeres.repositories.EntradaRepository;
 import com.prazeres.repositories.FluxoCaixaRepository;
@@ -168,14 +165,14 @@ public class EntradaService {
 
             if (entradaRequest.getStatusPagamento().equals(StatusPagamento.FINALIZADO)) {
                 FluxoCaixa fluxoCaixa = new FluxoCaixa();
-                fluxoCaixa.setRegistroVenda(LocalDateTime.now());
+                fluxoCaixa.setRegistroVenda(LocalDate.now());
                 var relatorio = validacaoRelatorio();
 
                 double valorTotal = fluxoCaixaRepository.valorCaixa() + entrada.getValorEntrada();
                 fluxoCaixa.setDescricao(relatorio);
-                fluxoCaixa.setValorEntrada(entrada.getValorEntrada());
-                fluxoCaixa.setValorSaida(0D);
-                fluxoCaixa.setValorTotal(valorTotal);
+                fluxoCaixa.setTipo(TipoMovimentacao.ENTRADA);
+                fluxoCaixa.setTipo(TipoMovimentacao.SAIDA);
+                fluxoCaixa.setValor(valorTotal);
 
                 fluxoCaixaRepository.save(fluxoCaixa);
                 entradaRepository.save(entrada);
