@@ -51,7 +51,7 @@ public class EntradaController {
 
     @GetMapping("/buscarTodosOsConsumosPorIdEntrada/{entradaId}")
     public EntradaResponse buscarTodosOsConsumosPorIdEntrada(@PathVariable Long entradaId) {
-        return entradaService.buscar(entradaId);
+        return entradaService.buscarTodosOsConsumosPorIdEntrada(entradaId);
     }
 
     @PostMapping

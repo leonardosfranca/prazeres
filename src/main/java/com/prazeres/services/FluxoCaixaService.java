@@ -2,6 +2,7 @@ package com.prazeres.services;
 
 import com.prazeres.domain.FluxoCaixa;
 import com.prazeres.domain.exceptionhandler.EntidadeNaoEncontradaException;
+import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.enums.TipoMovimentacao;
 import com.prazeres.repositories.EntradaRepository;
 import com.prazeres.repositories.FluxoCaixaRepository;
@@ -44,6 +45,10 @@ public class FluxoCaixaService {
         fluxo.setRegistroVenda(LocalDate.now());
         if (fluxo.getValor() == null) {
             fluxo.setValor(0D);
+        }
+        double valorTotal = calcularTotal();
+        if (fluxo.getTipo() == TipoMovimentacao.SAIDA && fluxo.getValor() > valorTotal) {
+            throw new NegocioException("O valor de saída é maior que o valor total disponível.");
         }
         return fluxoCaixaRepository.save(fluxo);
     }

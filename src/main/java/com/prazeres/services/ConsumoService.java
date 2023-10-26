@@ -23,6 +23,7 @@ public class ConsumoService {
         List<ConsumoResponse> consumo = new ArrayList<>();
         listaConsumo.forEach(listaConsumo1 -> {
             ConsumoResponse consumoListaResponse = new ConsumoResponse(
+                    listaConsumo1.getId(),
                     listaConsumo1.getQuantidade(),
                     listaConsumo1.getItem().getDescricao(),
                             listaConsumo1.getValor());
@@ -52,6 +53,7 @@ public class ConsumoService {
         List<ConsumoResponse> consumoList = new ArrayList<>();
         consumo.forEach(consumo1 -> {
             ConsumoResponse consumoResponse = new ConsumoResponse(
+                    consumo1.getId(),
             consumo1.getQuantidade(),
             consumo1.getItem().getDescricao(),
             consumo1.getValor());

@@ -2,6 +2,7 @@ package com.prazeres.domain;
 
 import com.prazeres.enums.TipoMovimentacao;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ public class FluxoCaixa implements Serializable {
     private LocalDate registroVenda;
     private String descricao;
     private TipoMovimentacao tipo;
+    @NotBlank
     private Double valor;
 
     public FluxoCaixa() {

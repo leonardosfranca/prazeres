@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,37 +83,12 @@ public class EntradaService {
         return entradas;
     }
 
-    public EntradaResponse buscar(Long entradaId) {
-        Entrada entrada = entradaRepository.findById(entradaId)
+    public EntradaResponse buscarTodosOsConsumosPorIdEntrada(Long entradaId) {
+        entradaRepository.findById(entradaId)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Entrada não encontrada"));
 
         List<ConsumoResponse> consumoResponseList = new ArrayList<>();
-
-        var consumos = consumoRepository.findAllByEntrada_Id(entradaId);
-
-        consumos.forEach(consumo -> {
-            ConsumoResponse consumoResponse = new ConsumoResponse(
-                    consumo.getQuantidade(),
-            consumo.getItem().getDescricao(),
-            consumo.getValor());
-            consumoResponseList.add(consumoResponse);
-        });
-
-        var totalConsumo = consumoRepository.valorConsumo(entradaId);
-        var valor = totalConsumo + entrada.getValorEntrada();
-        return new EntradaResponse(
-                new EntradaResponse.Quarto(
-                        entrada.getQuarto().getCapacidadePessoas()),
-                        entrada.getDataRegistro(),
-                        entrada.getHorarioEntrada(),
-                        entrada.getStatusEntrada(),
-                        entrada.getTipoPagamento(),
-                        entrada.getStatusPagamento(),
-                        consumoResponseList,
-                        entrada.getValorEntrada(),
-                        totalConsumo.doubleValue(),
-                        valor
-        );
+        throw new NegocioException("Entrada sem consumo");
     }
 
     public Entrada salvaEntrada(Entrada entrada) {
@@ -153,6 +127,7 @@ public class EntradaService {
     public Entrada atualizar(Long entradaId, Entrada entradaRequest) {
         Entrada entrada = entradaRepository.findById(entradaId)
                 .orElseThrow(() -> new NegocioException("Entrada não encontrada"));
+
 
         entrada.setPlacaVeiculo(entradaRequest.getPlacaVeiculo());
         entrada.setStatusEntrada(entradaRequest.getStatusEntrada());
@@ -211,7 +186,7 @@ public class EntradaService {
         double valorTotal = entrada.getValorEntrada() + custoAdicional;
         entrada.setValorEntrada(valorTotal);
 
-        float totalConsumos = consumoRepository.valorConsumo(entrada.getId());
+        double totalConsumos = (consumoRepository.valorConsumo(entrada.getId()) != null) ? consumoRepository.valorConsumo(entrada.getId()) : 0;
 
         double total = valorTotal + totalConsumos;
         entrada.setValorEntrada(total);
