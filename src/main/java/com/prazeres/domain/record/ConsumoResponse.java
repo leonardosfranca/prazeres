@@ -6,5 +6,7 @@ public record ConsumoResponse(
         Long id,
         Integer quantidade,
         String descricao,
-        Double valor
+        Double valor,
+        Double subTotal
+
     ){}

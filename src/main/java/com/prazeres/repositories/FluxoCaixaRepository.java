@@ -15,4 +15,7 @@ public interface FluxoCaixaRepository extends JpaRepository<FluxoCaixa, Long> {
     Double valorCaixa();
 
     List<FluxoCaixa> findByTipo(TipoMovimentacao tipoMovimentacao);
+
+    @Query("SELECT e FROM FluxoCaixa e ORDER BY e.id DESC")
+    List<FluxoCaixa> findAllOrderByCampoDesc();
 }

@@ -27,6 +27,11 @@ public class FluxoCaixaController {
     public FluxoCaixa buscarMovimentacoesPorId(@PathVariable Long fluxoCaixaId) {
         return fluxoCaixaService.buscarMovimentacoesPorId(fluxoCaixaId);
     }
+    @GetMapping("/consultaDeBaixoParaCima")
+    public List<FluxoCaixa> consultaDeBaixoParaCima() {
+        return fluxoCaixaService.consultarDadosDeBaixoParaCima();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public FluxoCaixa criarMovimentacao(FluxoCaixa entrada) {

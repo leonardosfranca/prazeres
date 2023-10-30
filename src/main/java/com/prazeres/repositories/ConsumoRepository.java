@@ -10,6 +10,6 @@ import java.util.List;
 public interface ConsumoRepository extends JpaRepository<Consumo, Long> {
     List<Consumo> findAllByEntrada_Id(Long consumoId);
     @Query(value = "select sum(c.valor)  from Consumo c  where c.entrada.id =:id")
-    Float valorConsumo (Long id);
+    Double valorConsumo (Long id);
 
 }

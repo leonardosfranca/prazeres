@@ -32,8 +32,8 @@ public class ConsumoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Consumo adicionar(Consumo consumo) {
-        return consumoService.salvar(consumo);
+    public Consumo adicionar(Consumo consumo, Entrada entrada) {
+        return consumoService.salvar(consumo, entrada);
     }
 
     @DeleteMapping("/{consumoId}")

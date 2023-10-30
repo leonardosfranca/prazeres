@@ -47,3 +47,45 @@ public class ItemService {
         itemRepository.deleteById(itemId);
     }
 }
+
+
+
+
+
+    /*public EntrantResponse buscarTodosOsConsumosPorIdEntrada(Long entradaId) {
+        Entrada entrada = entradaRepository.findById(entradaId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Entrada não encontrada"));
+        List<Consumo> consumos = consumoRepository.findAllByEntrada_Id(entradaId);
+        if (consumos.isEmpty()) {
+            throw new NegocioException("Entrada sem consumo");
+        }
+
+        List<ConsumoResponse> consumoResponseList = new ArrayList<>();
+
+        consumos.forEach(consumo -> {
+            consumo.setValorTotal(consumo.getQuantidade() * consumo.getItem().getValor());
+            ConsumoResponse consumoResponse = new ConsumoResponse(
+                    consumo.getId(),
+                    consumo.getQuantidade(),
+                    consumo.getItem().getDescricao(),
+                    consumo.getValorTotal()
+            );
+            consumoResponseList.add(consumoResponse);
+        });
+
+        var valorConsumo = consumoRepository.valorConsumo(entradaId);
+        var valorTotal = valorConsumo + entrada.getValorEntrada();
+        return new EntradaResponse(
+                new EntradaResponse.Quarto(entrada.getQuarto().getNumero()),
+                entrada.getDataRegistro(),
+                entrada.getHorarioEntrada(),
+                entrada.getStatusEntrada(),
+                entrada.getTipoPagamento(),
+                entrada.getStatusPagamento(),
+                consumoResponseList,
+                entrada.getValorEntrada(),
+                valorConsumo,
+                valorTotal
+
+        );
+    }*/

@@ -27,6 +27,9 @@ public class FluxoCaixaService {
     public List<FluxoCaixa> listarTodasMovimentacoes() {
         return fluxoCaixaRepository.findAll();
     }
+    public List<FluxoCaixa> consultarDadosDeBaixoParaCima() {
+        return fluxoCaixaRepository.findAllOrderByCampoDesc();
+    }
 
     public FluxoCaixa buscarMovimentacoesPorId(Long fluxoCaixaId) {
         return fluxoCaixaRepository.findById(fluxoCaixaId)
@@ -48,7 +51,7 @@ public class FluxoCaixaService {
         }
         double valorTotal = calcularTotal();
         if (fluxo.getTipo() == TipoMovimentacao.SAIDA && fluxo.getValor() > valorTotal) {
-            throw new NegocioException("O valor de saída é maior que o valor total disponível.");
+            throw new NegocioException("Saldo do caixa insuficiente para retirada.");
         }
         return fluxoCaixaRepository.save(fluxo);
     }

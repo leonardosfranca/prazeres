@@ -2,8 +2,9 @@ package com.prazeres.controllers;
 
 import com.prazeres.domain.Entrada;
 import com.prazeres.domain.exceptionhandler.NegocioException;
+import com.prazeres.domain.record.EntradaBuscaIdResponse;
 import com.prazeres.domain.record.EntradaResumoResponse;
-import com.prazeres.domain.record.EntradaResponse;
+import com.prazeres.domain.record.EntradaBuscaResponse;
 import com.prazeres.enums.StatusEntrada;
 import com.prazeres.repositories.EntradaRepository;
 import com.prazeres.services.EntradaService;
@@ -31,7 +32,7 @@ public class EntradaController {
     }
 
     @GetMapping("/{entradaId}")
-    public Entrada buscaEntradaId(@PathVariable Long entradaId) {
+    public EntradaBuscaIdResponse buscaEntradaId(@PathVariable Long entradaId) {
         return entradaService.buscaEntradaId(entradaId);
     }
 
@@ -50,7 +51,7 @@ public class EntradaController {
     }
 
     @GetMapping("/buscarTodosOsConsumosPorIdEntrada/{entradaId}")
-    public EntradaResponse buscarTodosOsConsumosPorIdEntrada(@PathVariable Long entradaId) {
+    public EntradaBuscaResponse buscarTodosOsConsumosPorIdEntrada(@PathVariable Long entradaId) {
         return entradaService.buscarTodosOsConsumosPorIdEntrada(entradaId);
     }
 

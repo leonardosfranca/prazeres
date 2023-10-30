@@ -14,9 +14,10 @@ public class FluxoCaixa implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDate registroVenda;
+
     private String descricao;
     private TipoMovimentacao tipo;
-    @NotBlank
+    //@NotBlank
     private Double valor;
 
     public FluxoCaixa() {
