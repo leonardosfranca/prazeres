@@ -10,6 +10,7 @@ import com.prazeres.repositories.EntradaRepository;
 import com.prazeres.services.EntradaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -56,6 +57,7 @@ public class EntradaController {
     }
 
     @PostMapping
+    @Transactional
     @ResponseStatus(HttpStatus.CREATED)
     public Entrada salvar(Entrada entrada) {
         return entradaService.salvaEntrada(entrada);

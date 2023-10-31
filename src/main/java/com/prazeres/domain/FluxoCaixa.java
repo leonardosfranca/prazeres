@@ -19,16 +19,18 @@ public class FluxoCaixa implements Serializable {
     private TipoMovimentacao tipo;
     //@NotBlank
     private Double valor;
+    private Double valorTotal;
 
     public FluxoCaixa() {
     }
 
-    public FluxoCaixa(Long id, LocalDate registroVenda, String descricao, TipoMovimentacao tipo, Double valor) {
+    public FluxoCaixa(Long id, LocalDate registroVenda, String descricao, TipoMovimentacao tipo, Double valor, Double valorTotal) {
         this.id = id;
         this.registroVenda = registroVenda;
         this.descricao = descricao;
         this.tipo = tipo;
         this.valor = valor;
+        this.valorTotal = valorTotal;
     }
 
     public Long getId() {
@@ -69,5 +71,13 @@ public class FluxoCaixa implements Serializable {
 
     public void setValor(Double valor) {
         this.valor = valor;
+    }
+
+    public Double getValorTotal() {
+        return valorTotal;
+    }
+
+    public void setValorTotal(Double valorTotal) {
+        this.valorTotal = valorTotal;
     }
 }

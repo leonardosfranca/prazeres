@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,13 +82,13 @@ public class EntradaService {
                 .sum();
 
         var valorTotal = valorConsumo + entrada.getValorEntrada();
-
+        Duration tempoPermanecido = Duration.between(entrada.getHorarioEntrada(), entrada.getHorarioSaida());
         return new EntradaBuscaIdResponse(
                 new EntradaBuscaIdResponse.Quarto(entrada.getQuarto().getNumero()),
                 entrada.getHorarioEntrada(),
                 entrada.getHorarioSaida(),
                 entrada.getPlacaVeiculo(),
-                entrada.getHorarioEntrada(),
+                tempoPermanecido,
                 consumo,
                 entrada.getStatusEntrada(),
                 valorConsumo,
@@ -135,7 +136,10 @@ public class EntradaService {
             );
             consumoResponseList.add(consumoResponse);
         });
+        return valorConsumo(entradaId, entrada, consumoResponseList);
 
+    }
+    private EntradaBuscaResponse valorConsumo(Long entradaId, Entrada entrada, List<ConsumoResponse> consumoResponseList) {
         var valorConsumo = consumoRepository.valorConsumo(entradaId);
         var valorTotal = valorConsumo + entrada.getValorEntrada();
         return new EntradaBuscaResponse(
@@ -156,7 +160,7 @@ public class EntradaService {
 
     public Entrada salvaEntrada(Entrada entrada) {
         Quarto quarto = quartoRepository.findById(entrada.getQuarto().getId())
-                .orElseThrow(() -> new NegocioException("Quarto não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Quarto não encontrado"));
 
         if (quarto.getStatusQuarto().equals(StatusQuarto.OCUPADO)) {
             throw new NegocioException("Quarto ocupado");
@@ -166,9 +170,8 @@ public class EntradaService {
         salvaEntrada(entrada, quarto);
         tipoQuarto(entrada);
 
-        var entradaRepositorio = entradaRepository.save(entrada);
-        quartoRepository.save(quarto);
-        return entradaRepositorio;
+
+        return entrada;
     }
 
     private void tipoQuarto(Entrada entrada) {
@@ -187,39 +190,50 @@ public class EntradaService {
         entrada.setStatusPagamento(StatusPagamento.PENDENTE);
         quarto.setStatusQuarto(StatusQuarto.OCUPADO);
         entrada.setTipoPagamento(TipoPagamento.PENDENTE);
+
+        entradaRepository.save(entrada);
+        quartoRepository.save(quarto);
     }
 
     public Entrada atualizar(Long entradaId, Entrada entradaRequest) {
         Entrada entrada = entradaRepository.findById(entradaId)
                 .orElseThrow(() -> new NegocioException("Entrada não encontrada"));
 
-
-        entrada.setPlacaVeiculo(entradaRequest.getPlacaVeiculo());
         entrada.setStatusEntrada(entradaRequest.getStatusEntrada());
         entrada.setTipoPagamento(entradaRequest.getTipoPagamento());
         entrada.setStatusPagamento(entradaRequest.getStatusPagamento());
+        StatusPagamento novoStatusPagamento = entradaRequest.getStatusPagamento();
 
+        if (novoStatusPagamento == StatusPagamento.PAGO) {
+            novoStatusPagamento = StatusPagamento.FINALIZADO;
+        }
+        entrada.setStatusPagamento(novoStatusPagamento);
 
         if (!entradaRequest.getTipoPagamento().equals(TipoPagamento.PENDENTE)) {
             validacaoHorario(entrada);
 
-            if (entradaRequest.getStatusPagamento().equals(StatusPagamento.FINALIZADO)) {
-                FluxoCaixa fluxoCaixa = new FluxoCaixa();
-                fluxoCaixa.setRegistroVenda(LocalDate.now());
-                var relatorio = validacaoRelatorio();
-
-                double valorTotal = (fluxoCaixaRepository.valorCaixa() != null) ? entrada.getValorEntrada() : 0;
-
-                fluxoCaixa.setDescricao(relatorio);
-                fluxoCaixa.setTipo(TipoMovimentacao.ENTRADA);
-                fluxoCaixa.setTipo(TipoMovimentacao.SAIDA);
-                fluxoCaixa.setValor(valorTotal);
-
-                fluxoCaixaRepository.save(fluxoCaixa);
-                entradaRepository.save(entrada);
+            if (novoStatusPagamento == StatusPagamento.FINALIZADO) {
+                entrada.setStatusEntrada(StatusEntrada.FINALIZADA);
+                salvaNoCaixa(entrada);
             }
+            entradaRepository.save(entrada);
         }
         return entrada;
+    }
+    private void salvaNoCaixa(Entrada entrada) {
+        FluxoCaixa fluxoCaixa = new FluxoCaixa();
+        fluxoCaixa.setRegistroVenda(LocalDate.now());
+        var relatorio = validacaoRelatorio();
+
+        double valorTotal = (fluxoCaixaRepository.valorCaixa() != null) ? entrada.getValorEntrada() : 0;
+
+        fluxoCaixa.setDescricao(relatorio);
+        fluxoCaixa.setTipo(TipoMovimentacao.ENTRADA);
+        fluxoCaixa.setTipo(TipoMovimentacao.SAIDA);
+        fluxoCaixa.setValor(valorTotal);
+
+        fluxoCaixaRepository.save(fluxoCaixa);
+
     }
 
     private String validacaoRelatorio() {
@@ -243,6 +257,8 @@ public class EntradaService {
         Duration tempoPermanecido = Duration.between(horarioEntrada, horarioSaida);
         long minutosTotais = tempoPermanecido.toMinutes();
         double taxaCustoAdicionalPorHora = 5.0;
+
+
 
         double custoAdicional = 0D;
 

@@ -8,6 +8,7 @@ public record QuartoResponse(
         String descricao,
         Integer capacidadePessoas,
         StatusQuarto statusQuarto,
-        TipoQuarto tipoQuarto
+        TipoQuarto tipoQuarto,
+        Double valor
     ){
 }

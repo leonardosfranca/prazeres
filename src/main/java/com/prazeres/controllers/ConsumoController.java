@@ -32,7 +32,7 @@ public class ConsumoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Consumo adicionar(Consumo consumo, Entrada entrada) {
+    public ConsumoResponse adicionar(Consumo consumo, Long entrada) {
         return consumoService.salvar(consumo, entrada);
     }
 

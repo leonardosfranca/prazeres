@@ -78,4 +78,5 @@ public class Consumo implements Serializable {
     public void setValorTotal(Double valorTotal) {
         this.valorTotal = valorTotal;
     }
+
 }

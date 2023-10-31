@@ -1,9 +1,8 @@
 package com.prazeres.domain.record;
 
-import com.prazeres.domain.Consumo;
-import com.prazeres.domain.Quarto;
 import com.prazeres.enums.StatusEntrada;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -12,7 +11,7 @@ public record EntradaBuscaIdResponse(
         LocalTime horaEntrada,
         LocalTime horaSaida,
         String placaVeiculo,
-        LocalTime tempoPermanecido,
+        Duration tempoPermanecido,
         List<ConsumoResponse> consumo,
         StatusEntrada statusEntrada,
         Double totalConsumo,

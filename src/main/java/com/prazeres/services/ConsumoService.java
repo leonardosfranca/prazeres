@@ -39,17 +39,22 @@ public class ConsumoService {
         return consumo;
     }
 
+    public ConsumoResponse salvar(Consumo consumo, Long entradaId) {
 
-    public Consumo salvar(Consumo consumo, Entrada entrada) {
-        if (!entradaRepository.existsById(entrada.getId())) {
+        if (entradaId == null ) {
             throw new EntidadeNaoEncontradaException("Entrada não encontrada");
-        }
-        if (consumo.getEntrada().getId() == null || consumo.getEntrada().getId().describeConstable().isEmpty()) {
-            throw new NegocioException("Entrada não informada");
         }
 
         consumo.setValor(subTotal(consumo));
-        return consumoRepository.save(consumo);
+
+        consumoRepository.save(consumo);
+        return new ConsumoResponse(
+                consumo.getId(),
+                consumo.getQuantidade(),
+                consumo.getItem().getDescricao(),
+                consumo.getItem().getValor(),
+                consumo.getValor()
+                );
     }
 
     public List<ConsumoResponse> buscarConsumoPorId(Long consumoId) {
@@ -81,14 +86,4 @@ public class ConsumoService {
                 .orElseThrow(() -> new NegocioException("Consumo não encontrado"));
         consumoRepository.deleteById(buscarConsumo.getId());
     }
-
-
-
-    //TODO: findallquartos do menor pro maior
-    //TODO: ao criar entrada seta automaticamente o status EM_ANDAMENTO
-    /*TODO: quando o statusPAGAMENTO for PAGO, setar o status da entrada automaticamente pra finalizada,
-    e se ela for finalizada nao pode mais ser alterada de jeito nenhum*/
-    //TODO: no response de atualizar entrada colocar o valor do quarto e  valor total do consumo em variaveis diferentes
-
-
 }

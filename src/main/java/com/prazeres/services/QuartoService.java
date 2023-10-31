@@ -7,6 +7,7 @@ import com.prazeres.repositories.QuartoRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -21,11 +22,28 @@ public class QuartoService {
     }
 
     public List<Quarto> listar() {
-        return quartoRepository.findAll();
+        List<Quarto> quartos = quartoRepository.findAll();
+
+        // Crie um Comparator personalizado para comparar os quartos pelo ID em ordem crescente
+        Comparator<Quarto> idComparator = Comparator.comparing(Quarto::getId);
+
+        // Ordene a lista de quartos usando o Comparator personalizado
+        quartos.sort(idComparator);
+
+        return quartos;
     }
 
     public List<Quarto> listarPorStatus(StatusQuarto statusQuarto) {
-        return quartoRepository.findAllByStatusQuarto(statusQuarto);
+        //return quartoRepository.findAllByStatusQuarto(statusQuarto);
+        List<Quarto> quartos = quartoRepository.findAllByStatusQuarto(statusQuarto);
+
+        // Crie um Comparator personalizado para comparar os quartos pelo ID em ordem crescente
+        Comparator<Quarto> idComparator = Comparator.comparing(Quarto::getId);
+
+        // Ordene a lista de quartos usando o Comparator personalizado
+        quartos.sort(idComparator);
+
+        return quartos;
     }
 
     public ResponseEntity<Quarto> buscar(Long quartoId) {

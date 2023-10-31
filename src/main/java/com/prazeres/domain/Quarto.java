@@ -17,19 +17,19 @@ public class Quarto implements Serializable {
     private StatusQuarto statusQuarto;
     @Enumerated(EnumType.STRING)
     private TipoQuarto tipoQuarto;
+    private Double valor;
 
     public Quarto() {
     }
-    public Quarto(Long id, Integer capacidadePessoas, StatusQuarto statusQuarto, TipoQuarto tipoQuarto) {
-    }
 
     public Quarto(Long id, Integer numero, Integer capacidadePessoas, StatusQuarto statusQuarto,
-                  TipoQuarto tipoQuarto) {
+                  TipoQuarto tipoQuarto, Double valor) {
         this.id = id;
         this.numero = numero;
         this.capacidadePessoas = capacidadePessoas;
         this.statusQuarto = statusQuarto;
         this.tipoQuarto = tipoQuarto;
+        this.valor = valor;
     }
 
     public Long getId() {
@@ -70,5 +70,13 @@ public class Quarto implements Serializable {
 
     public void setNumero(Integer numero) {
         this.numero = numero;
+    }
+
+    public Double getValor() {
+        return valor;
+    }
+
+    public void setValor(Double valor) {
+        this.valor = valor;
     }
 }
