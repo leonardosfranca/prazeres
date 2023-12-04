@@ -2,6 +2,7 @@ package com.prazeres.services;
 
 import com.prazeres.domain.Quarto;
 import com.prazeres.domain.exceptionhandler.NegocioException;
+import com.prazeres.domain.record.QuartoResponse;
 import com.prazeres.enums.StatusQuarto;
 import com.prazeres.repositories.QuartoRepository;
 import org.springframework.http.ResponseEntity;
@@ -22,27 +23,17 @@ public class QuartoService {
     }
 
     public List<Quarto> listar() {
+
         List<Quarto> quartos = quartoRepository.findAll();
 
-        // Crie um Comparator personalizado para comparar os quartos pelo ID em ordem crescente
         Comparator<Quarto> idComparator = Comparator.comparing(Quarto::getId);
-
-        // Ordene a lista de quartos usando o Comparator personalizado
         quartos.sort(idComparator);
 
         return quartos;
     }
 
-    public List<Quarto> listarPorStatus(StatusQuarto statusQuarto) {
-        //return quartoRepository.findAllByStatusQuarto(statusQuarto);
-        List<Quarto> quartos = quartoRepository.findAllByStatusQuarto(statusQuarto);
-
-        // Crie um Comparator personalizado para comparar os quartos pelo ID em ordem crescente
-        Comparator<Quarto> idComparator = Comparator.comparing(Quarto::getId);
-
-        // Ordene a lista de quartos usando o Comparator personalizado
-        quartos.sort(idComparator);
-
+    public List<QuartoResponse> listarPorStatus(StatusQuarto statusQuarto) {
+        List<QuartoResponse> quartos = quartoRepository.findAllByStatusQuarto(statusQuarto);
         return quartos;
     }
 
@@ -60,6 +51,13 @@ public class QuartoService {
         if (!quartoRepository.existsById(quartoId)) {
             return ResponseEntity.notFound().build();
         }
+        Quarto quartoExistente = quartoRepository.findById(quartoId)
+                .orElseThrow(() -> new NegocioException("Quarto não encontrado"));
+
+        if (quartoExistente.getStatusQuarto() == StatusQuarto.OCUPADO) {
+            throw new NegocioException("O quarto está ocupado e não pode ser atualizado");
+        }
+
         requestQuarto.setId(quartoId);
         Quarto quartoAtuazlizado = quartoRepository.save(requestQuarto);
 

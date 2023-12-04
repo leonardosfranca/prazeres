@@ -10,29 +10,33 @@ public class Consumo implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer quantidade;
-    @ManyToOne
-    @JoinColumn(name = "item_id")
-    private Item item;
+    private Double valor;
     @OneToOne
     @JoinColumn(name = "entrada_id")
     private Entrada entrada;
-    private Double valor;
+    @ManyToOne
+    @JoinColumn(name = "item_id")
+    private Item item;
     private Double valorTotal;
 
     public Consumo() {
     }
 
-    public Consumo(Long id, Integer quantidade, Item item, Entrada entrada, Double valor, Double valorTotal) {
+    public Consumo(Long id, Integer quantidade, Double valor, Entrada entrada, Item item, Double valorTotal) {
         this.id = id;
         this.quantidade = quantidade;
-        this.item = item;
-        this.entrada = entrada;
         this.valor = valor;
+        this.entrada = entrada;
+        this.item = item;
         this.valorTotal = valorTotal;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Integer getQuantidade() {
@@ -43,12 +47,12 @@ public class Consumo implements Serializable {
         this.quantidade = quantidade;
     }
 
-    public Item getItem() {
-        return item;
+    public Double getValor() {
+        return valor;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
+    public void setValor(Double valor) {
+        this.valor = valor;
     }
 
     public Entrada getEntrada() {
@@ -59,16 +63,12 @@ public class Consumo implements Serializable {
         this.entrada = entrada;
     }
 
-    public Double getValor() {
-        return valor;
+    public Item getItem() {
+        return item;
     }
 
-    public void setValor(Double subTotal) {
-        this.valor = subTotal;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void setItem(Item item) {
+        this.item = item;
     }
 
     public Double getValorTotal() {
@@ -78,5 +78,4 @@ public class Consumo implements Serializable {
     public void setValorTotal(Double valorTotal) {
         this.valorTotal = valorTotal;
     }
-
 }

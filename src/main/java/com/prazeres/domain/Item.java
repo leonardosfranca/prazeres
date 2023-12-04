@@ -1,9 +1,7 @@
 package com.prazeres.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.springframework.http.ProblemDetail;
 
 import java.io.Serializable;
 
@@ -14,13 +12,16 @@ public class Item implements Serializable {
     private Long id;
     private String descricao;
     private Double valor;
+    @ManyToOne
+    private Quarto quarto;
     public Item() {
     }
 
-    public Item(Long id, String descricao, Double valor) {
+    public Item(Long id, String descricao, Double valor, Quarto quarto) {
         this.id = id;
         this.descricao = descricao;
         this.valor = valor;
+        this.quarto = quarto;
     }
 
     public Long getId() {
@@ -45,5 +46,14 @@ public class Item implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+
+    public Quarto getQuarto() {
+        return quarto;
+    }
+
+    public void setQuarto(Quarto quarto) {
+        this.quarto = quarto;
     }
 }

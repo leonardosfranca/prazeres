@@ -2,6 +2,7 @@ package com.prazeres.controllers;
 
 import com.prazeres.domain.Quarto;
 import com.prazeres.domain.exceptionhandler.NegocioException;
+import com.prazeres.domain.record.QuartoResponse;
 import com.prazeres.enums.StatusQuarto;
 import com.prazeres.services.QuartoService;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class QuartoController {
 
     @GetMapping("/statusQuarto")
     @ResponseStatus(HttpStatus.OK)
-    public List<Quarto> listarPorStatus(StatusQuarto statusQuarto) {
+    public List<QuartoResponse> listarPorStatus(StatusQuarto statusQuarto) {
         return quartoService.listarPorStatus(statusQuarto);
     }
 

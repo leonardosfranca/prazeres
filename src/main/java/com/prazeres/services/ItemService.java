@@ -1,47 +1,96 @@
 package com.prazeres.services;
 
 import com.prazeres.domain.Item;
+import com.prazeres.domain.Quarto;
+import com.prazeres.domain.exceptionhandler.EntidadeNaoEncontradaException;
 import com.prazeres.domain.exceptionhandler.NegocioException;
+import com.prazeres.domain.record.ItemResponse;
+import com.prazeres.enums.StatusQuarto;
 import com.prazeres.repositories.ItemRepository;
-import org.springframework.http.ResponseEntity;
+import com.prazeres.repositories.QuartoRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final QuartoRepository quartoRepository;
 
-    public ItemService(ItemRepository itemRepository) {
+    public ItemService(ItemRepository itemRepository, QuartoRepository quartoRepository) {
         this.itemRepository = itemRepository;
+        this.quartoRepository = quartoRepository;
     }
 
-    public List<Item> listar() {
-        return itemRepository.findAll();
+    public List<ItemResponse> listar() {
+        List<Item> itens = itemRepository.findAll();
+        List<ItemResponse> itemResponses = new ArrayList<>();
+
+        for (Item item : itens) {
+            ItemResponse itemResponse = new ItemResponse(
+                    item.getId(),
+                    item.getDescricao(),
+                    item.getValor()
+            );
+            itemResponses.add(itemResponse);
+        }
+
+        return itemResponses;
     }
 
-    public ResponseEntity<Item> buscarId(Long itemId) {
-        return itemRepository.findById(itemId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+
+    public ItemResponse buscarId(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(()-> new EntidadeNaoEncontradaException("Item não encontrado"));
+        ItemResponse itemResponse = new ItemResponse(
+                item.getId(),
+                item.getDescricao(),
+                item.getValor()
+        );
+
+        return itemResponse;
     }
 
     public Item adicionar(Item itemId) {
         return itemRepository.save(itemId);
     }
 
-    public Item atualizar(Long itemId, Item itemRequest) {
-        Item item = itemRepository.findById(itemId)
+    public ItemResponse atualizar(Long itemId, Item itemRequest) {
+        Item itemExistente = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NegocioException("Item não encontrado"));
-        Item itemAtualizado = new Item(
-                item.getId(),
-                itemRequest.getDescricao(),
-                itemRequest.getValor()
+
+        if (itemEmUso(itemExistente)) {
+            throw new NegocioException("O item está em uso e não pode ser atualizado");
+        }
+
+        // Atualize as propriedades do item existente com base na solicitação
+        itemExistente.setDescricao(itemRequest.getDescricao());
+        itemExistente.setValor(itemRequest.getValor());
+
+        itemRepository.save(itemExistente);
+
+        // Crie uma instância de ItemResponse com os dados atualizados e retorne
+        ItemResponse itemResponse = new ItemResponse(
+                itemExistente.getId(),
+                itemExistente.getDescricao(),
+                itemExistente.getValor()
         );
-        itemRepository.save(itemAtualizado);
-        return item;
+
+        return itemResponse;
     }
+
+    private boolean itemEmUso(Item item) {
+        Quarto quarto = item.getQuarto(); // Supondo que o item está associado a um quarto
+
+        if (quarto != null && quarto.getStatusQuarto() == StatusQuarto.OCUPADO) {
+            return true; // O item está associado a um quarto ocupado
+        }
+
+        return false; // O item não está associado a um quarto ocupado
+    }
+
 
     public void excluir(Long itemId) {
         itemRepository.deleteById(itemId);

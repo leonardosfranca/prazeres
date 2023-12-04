@@ -50,7 +50,9 @@ public class EntradaService {
                     entradas.getId(),
                     entradas.getDataRegistro(),
                     entradas.getPlacaVeiculo(),
-                    new EntradaResumoResponse.Quarto(entradas.getQuarto().getStatusQuarto(), entradas.getQuarto().getTipoQuarto()),
+                    new EntradaResumoResponse.Quarto(
+                            entradas.getQuarto().getStatusQuarto(),
+                            entradas.getQuarto().getTipoQuarto()),
                     entradas.getHorarioEntrada(),
                     entradas.getHorarioSaida(),
                     entradas.getStatusEntrada(),
@@ -82,13 +84,11 @@ public class EntradaService {
                 .sum();
 
         var valorTotal = valorConsumo + entrada.getValorEntrada();
-        Duration tempoPermanecido = Duration.between(entrada.getHorarioEntrada(), entrada.getHorarioSaida());
         return new EntradaBuscaIdResponse(
                 new EntradaBuscaIdResponse.Quarto(entrada.getQuarto().getNumero()),
                 entrada.getHorarioEntrada(),
                 entrada.getHorarioSaida(),
                 entrada.getPlacaVeiculo(),
-                tempoPermanecido,
                 consumo,
                 entrada.getStatusEntrada(),
                 valorConsumo,
@@ -153,7 +153,6 @@ public class EntradaService {
                 entrada.getValorEntrada(),
                 valorConsumo,
                 valorTotal
-
         );
     }
 
@@ -166,21 +165,11 @@ public class EntradaService {
             throw new NegocioException("Quarto ocupado");
         }
         entrada.setStatusEntrada(StatusEntrada.EM_ANDAMENTO);
-
+        entrada.setValorEntrada(quarto.getValor());
         salvaEntrada(entrada, quarto);
-        tipoQuarto(entrada);
 
 
         return entrada;
-    }
-
-    private void tipoQuarto(Entrada entrada) {
-        switch (entrada.getQuarto().getTipoQuarto()) {
-            case SUITE_MASTER -> entrada.setValorEntrada(70D);
-            case SUITE_COMUM -> entrada.setValorEntrada(40D);
-            case SUITE_VIP -> entrada.setValorEntrada(50D);
-            case SUITE_EXECUTIVA -> entrada.setValorEntrada(60D);
-        }
     }
 
     private void salvaEntrada(Entrada entrada, Quarto quarto) {
@@ -202,10 +191,13 @@ public class EntradaService {
         entrada.setStatusEntrada(entradaRequest.getStatusEntrada());
         entrada.setTipoPagamento(entradaRequest.getTipoPagamento());
         entrada.setStatusPagamento(entradaRequest.getStatusPagamento());
+
         StatusPagamento novoStatusPagamento = entradaRequest.getStatusPagamento();
 
-        if (novoStatusPagamento == StatusPagamento.PAGO) {
-            novoStatusPagamento = StatusPagamento.FINALIZADO;
+        if (novoStatusPagamento != null) {
+            if (novoStatusPagamento == StatusPagamento.PAGO) {
+                novoStatusPagamento = StatusPagamento.FINALIZADO;
+            }
         }
         entrada.setStatusPagamento(novoStatusPagamento);
 

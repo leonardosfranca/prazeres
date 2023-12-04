@@ -4,11 +4,11 @@ import com.prazeres.enums.StatusQuarto;
 import com.prazeres.enums.TipoQuarto;
 
 public record QuartoResponse(
+        Long id,
         Integer numero,
-        String descricao,
         Integer capacidadePessoas,
         StatusQuarto statusQuarto,
         TipoQuarto tipoQuarto,
-        Double valor
+        TipoQuarto  valor
     ){
 }

@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Entity
 public class Quarto implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer numero;
     private Integer capacidadePessoas;

@@ -1,7 +1,6 @@
 package com.prazeres.services;
 
 import com.prazeres.domain.Consumo;
-import com.prazeres.domain.Entrada;
 import com.prazeres.domain.exceptionhandler.EntidadeNaoEncontradaException;
 import com.prazeres.domain.exceptionhandler.NegocioException;
 import com.prazeres.domain.record.ConsumoResponse;

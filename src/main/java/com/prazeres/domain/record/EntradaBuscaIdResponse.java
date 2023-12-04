@@ -11,7 +11,6 @@ public record EntradaBuscaIdResponse(
         LocalTime horaEntrada,
         LocalTime horaSaida,
         String placaVeiculo,
-        Duration tempoPermanecido,
         List<ConsumoResponse> consumo,
         StatusEntrada statusEntrada,
         Double totalConsumo,

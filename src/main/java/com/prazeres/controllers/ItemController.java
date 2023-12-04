@@ -2,6 +2,7 @@ package com.prazeres.controllers;
 
 import com.prazeres.domain.Item;
 import com.prazeres.domain.exceptionhandler.NegocioException;
+import com.prazeres.domain.record.ItemResponse;
 import com.prazeres.services.ItemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +21,12 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<Item> listar() {
+    public List<ItemResponse> listar() {
         return itemService.listar();
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<Item> buscarId(@PathVariable Long itemId) {
+    public ItemResponse buscarId(@PathVariable Long itemId) {
         return itemService.buscarId(itemId);
 
     }
@@ -37,8 +38,8 @@ public class ItemController {
     }
 
     @PutMapping("/{itemId}")
-    public Item atualizar(@PathVariable Long itemId,
-                          @RequestBody Item item) {
+    public ItemResponse atualizar(@PathVariable Long itemId,
+                                  @RequestBody Item item) {
         return itemService.atualizar(itemId, item);
     }
 

@@ -2,7 +2,6 @@ package com.prazeres.controllers;
 
 import com.prazeres.domain.FluxoCaixa;
 import com.prazeres.domain.exceptionhandler.NegocioException;
-import com.prazeres.enums.TipoMovimentacao;
 import com.prazeres.services.FluxoCaixaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
